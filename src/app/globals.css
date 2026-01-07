@@ -6,4 +6,6 @@
 
 .mainContainer {
   width: 1285px;
+  margin-left: 25px;
+  margin-right: 25px;
 }
