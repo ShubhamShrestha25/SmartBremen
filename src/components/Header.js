@@ -6,11 +6,10 @@ import { usePathname } from "next/navigation";
 
 const Header = () => {
   const pathname = usePathname();
-  console.log(pathname);
   return (
     <nav className="flex justify-center items-center h-20 bg-white">
       <div className="mainContainer flex justify-between items-center">
-        <div className="w-[155px] h-[65px]">
+        <Link href="/" className="w-[155px] h-[65px]">
           <Image
             src="/images/logo1.png"
             alt=""
@@ -18,7 +17,7 @@ const Header = () => {
             height={60}
             className="w-full h-auto"
           />
-        </div>
+        </Link>
         <div>
           <ul className="uppercase flex gap-[90px] text-[#45414F]">
             <Link

@@ -1,4 +1,4 @@
-export default function Home() {
+export default function Help() {
   return (
     <div className="flex justify-center">
       <div
@@ -17,15 +17,17 @@ export default function Home() {
       >
         <div className="flex justify-center">
           <div className="mainContainer">
-            <div className="w-1/2 mt-14">
+            <div className="w-1/2 mt-14 mb-6">
               <div>
-                <h1 className="text-[#FF4B4B] text-2xl font-medium">Moin!</h1>
+                <h1 className="text-[#FF4B4B] text-2xl font-medium mb-1.5">
+                  Moin!
+                </h1>
                 <p className="text-sm">
                   This page helps you understand how to use the map and explore
                   the city’s informal side.
                 </p>
               </div>
-              <div className="mt-4 bg-white/80 h-[140px] p-5 rounded-[20px]">
+              <div className="mt-4 bg-white/80 p-5 rounded-[20px]">
                 <h1 className="font-medium mb-1">How to Use the Map</h1>
                 <ul className="list-disc text-sm ml-5">
                   <li>
@@ -39,12 +41,12 @@ export default function Home() {
                     Each place is based on real observations and experiences
                   </li>
                 </ul>
-                <p className="text-sm">
+                <p className="text-sm mt-1">
                   There is no right or wrong way to explore — just follow your
                   curiosity.
                 </p>
               </div>
-              <div className="mt-4 bg-white/80 h-[178px] p-5 rounded-[20px]">
+              <div className="mt-4 bg-white/80 p-5 rounded-[20px]">
                 <h1 className="font-medium mb-1">
                   What Is an “Informal” Place?
                 </h1>
@@ -65,7 +67,7 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-              <div className="mt-4 bg-white/80 h-[140px] p-5 rounded-[20px]">
+              <div className="mt-4 bg-white/80 p-5 rounded-[20px]">
                 <h1 className="font-medium mb-1">Who Is This For?</h1>
                 <p className="text-sm">This website is for:</p>
                 <ul className="list-disc text-sm ml-5">
