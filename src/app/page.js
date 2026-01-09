@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -30,9 +31,11 @@ export default function Home() {
                   Bremen reveals these informal layers and makes them visible.
                 </p>
               </div>
-              <button className="w-[244px] h-[60px] bg-[#6BEE32] rounded-[20px] font-semibold mt-9">
-                START EXPLORING
-              </button>
+              <Link href="/map">
+                <button className="w-[244px] h-[60px] bg-[#6BEE32] rounded-[20px] font-semibold mt-9 cursor-pointer">
+                  START EXPLORING
+                </button>
+              </Link>
             </div>
             <div>
               <div className="absolute -bottom-16 left-0 w-[400px] z-10">
