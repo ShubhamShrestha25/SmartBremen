@@ -1,21 +1,22 @@
+import Image from "next/image";
+
 export default function Help() {
   return (
     <div className="flex justify-center">
-      <div
-        style={{
-          backgroundImage: `
-            linear-gradient(269.99deg, rgba(255, 255, 255, 0) 0.01%, rgba(255, 255, 255, 0.853714) 50.73%, #FFFFFF 99.99%),
-            linear-gradient(136.47deg, rgba(255, 255, 255, 0.2) 26.45%, rgba(0, 0, 0, 0) 93.15%),
-            url('/images/help-bg.png')
-          `,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          width: "100vw",
-          minHeight: "calc(100vh - 80px)",
-        }}
-        className="relative"
-      >
-        <div className="flex justify-center">
+      <div className="relative w-screen min-h-[calc(100vh-80px)] overflow-hidden">
+        <Image
+          src="/images/help-bg.png"
+          alt="Background of Bremen"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 z-10 bg-[linear-gradient(269.99deg,rgba(255,255,255,0)_0.01%,rgba(255,255,255,0.85)_50.73%,#fff_99.99%),linear-gradient(136.47deg,rgba(255,255,255,0.2)_26.45%,rgba(0,0,0,0)_93.15%)]" />
+
+        <div className="relative z-20 flex justify-center">
           <div className="mainContainer">
             <div className="w-1/2 mt-14 mb-6">
               <div>

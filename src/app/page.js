@@ -4,18 +4,17 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="flex justify-center">
-      <div
-        style={{
-          backgroundImage: "url('/images/smartbremen-bg.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          width: "100vw",
-          minHeight: "calc(100vh - 80px)",
-        }}
-        className="flex justify-between "
-      >
-        <div className="flex justify-center w-full">
-          <main className="mainContainer relative overflow-hidden">
+      <div className="relative w-screen min-h-[calc(100vh-80px)] overflow-hidden">
+        <Image
+          src="/images/smartbremen-bg.png"
+          alt="Background of Bremen"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="flex justify-center w-full h-full">
+          <main className="mainContainer relative">
             <div className="flex flex-col items-center gap-[35px] mt-[89px]">
               <div className="text-center">
                 <h1 className="text-[44px] font-medium">
@@ -45,6 +44,7 @@ export default function Home() {
                   width={300}
                   height={160}
                   className="rounded-lg w-full h-auto"
+                  priority
                 />
               </div>
 
@@ -55,6 +55,7 @@ export default function Home() {
                   width={700}
                   height={160}
                   className="rounded-lg w-full h-auto"
+                  priority
                 />
               </div>
 
@@ -65,6 +66,7 @@ export default function Home() {
                   width={300}
                   height={160}
                   className="rounded-lg w-full h-auto"
+                  priority
                 />
               </div>
             </div>
