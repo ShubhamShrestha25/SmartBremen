@@ -33,8 +33,12 @@ const Header = () => {
               <li>help</li>
             </Link>
             <Link
-              className={pathname === "/login" ? "text-[#FF4B4B]" : ""}
-              href="/login"
+              className={
+                pathname === "/auth/login" || "/auth/register"
+                  ? "text-[#FF4B4B]"
+                  : ""
+              }
+              href="/auth/login"
             >
               <li>login</li>
             </Link>
