@@ -11,9 +11,13 @@ export default function Home() {
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-cover relative z-20"
         />
-        <div className="flex justify-center w-full h-full">
+
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 z-10 bg-[linear-gradient(177.42deg,#FFFFFF_40.4%,rgba(255,255,255,0.758942)_55.03%,rgba(255,75,75,0.54)_103.24%)]" />
+
+        <div className=" relative z-20 flex justify-center w-full h-full">
           <main className="mainContainer relative">
             <div className="flex flex-col items-center gap-[35px] mt-[89px]">
               <div className="text-center">
@@ -50,7 +54,7 @@ export default function Home() {
 
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px]">
                 <Image
-                  src="/images/city.png"
+                  src="/images/city1.png"
                   alt=""
                   width={700}
                   height={160}
@@ -59,7 +63,7 @@ export default function Home() {
                 />
               </div>
 
-              <div className="absolute -bottom-28 right-0 w-[380px] z-10">
+              <div className="absolute -bottom-28 right-0 w-[380px] z-10 ">
                 <Image
                   src="/images/kirche.webp"
                   alt=""
