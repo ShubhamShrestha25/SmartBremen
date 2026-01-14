@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 const Header = () => {
   const pathname = usePathname();
   return (
-    <nav className="flex justify-center items-center h-20 bg-white">
+    <nav className="sticky top-0 z-50 flex justify-center items-center h-20 bg-white">
       <div className="mainContainer flex justify-between items-center">
         <Link href="/" className="w-[155px] h-[65px]">
           <Image
