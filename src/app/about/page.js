@@ -5,7 +5,7 @@ export default function About() {
     <div className="flex justify-center">
       <div className="relative w-screen min-h-[calc(100vh-80px)] overflow-hidden">
         <Image
-          src="/images/about-bg.png"
+          src="/images/about-bg.webp"
           alt="Background of Bremen"
           fill
           priority

@@ -39,7 +39,7 @@ export default function Home() {
             <div>
               <div className="absolute -bottom-16 left-0 w-[400px] z-10">
                 <Image
-                  src="/images/DDCC.png"
+                  src="/images/DDCC.webp"
                   alt=""
                   width={300}
                   height={160}
@@ -59,9 +59,9 @@ export default function Home() {
                 />
               </div>
 
-              <div className="absolute -bottom-30 right-0 w-[380px] z-10">
+              <div className="absolute -bottom-28 right-0 w-[380px] z-10">
                 <Image
-                  src="/images/kirche.png"
+                  src="/images/kirche.webp"
                   alt=""
                   width={300}
                   height={160}
