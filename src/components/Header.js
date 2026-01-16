@@ -18,31 +18,38 @@ const Header = () => {
             className="w-full h-auto"
           />
         </Link>
-        <div>
-          <ul className="uppercase flex gap-[90px] text-[#45414F]">
-            <Link
-              className={pathname === "/about" ? "text-[#FF4B4B]" : ""}
-              href="/about"
-            >
-              <li>about</li>
-            </Link>
-            <Link
-              className={pathname === "/help" ? "text-[#FF4B4B]" : ""}
-              href="/help"
-            >
-              <li>help</li>
-            </Link>
-            <Link
-              className={
-                pathname === "/auth/login" || "/auth/register"
-                  ? "text-[#FF4B4B]"
-                  : ""
-              }
-              href="/auth/login"
-            >
-              <li>login</li>
-            </Link>
-          </ul>
+        <div className="flex items-center gap-20">
+          <div>
+            <ul className="uppercase flex gap-20 text-[#45414F]">
+              <Link
+                className={pathname === "/about" ? "text-[#FF4B4B]" : ""}
+                href="/about"
+              >
+                <li>about</li>
+              </Link>
+              <Link
+                className={pathname === "/help" ? "text-[#FF4B4B]" : ""}
+                href="/help"
+              >
+                <li>help</li>
+              </Link>
+              <Link
+                className={
+                  pathname === "/auth/login" || "/auth/register"
+                    ? "text-[#FF4B4B]"
+                    : ""
+                }
+                href="/auth/login"
+              >
+                <li>login</li>
+              </Link>
+            </ul>
+          </div>
+          <Link href="/auth/dashboard">
+            <div className="h-8 w-8 rounded-full flex items-center justify-center font-bold border border-[#FF4B4B] text-sm">
+              JD
+            </div>
+          </Link>
         </div>
       </div>
     </nav>

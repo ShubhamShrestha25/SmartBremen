@@ -21,7 +21,7 @@ export default function Home() {
           <main className="mainContainer relative">
             <div className="flex flex-col items-center gap-[35px] mt-[89px]">
               <div className="text-center">
-                <h1 className="text-[44px] font-medium">
+                <h1 className="text-[44px] font-medium text-[#FF4B4B]">
                   Discover the Hidden City
                 </h1>
                 <p className="text-[24px]  text-[#45414F]">
@@ -35,7 +35,7 @@ export default function Home() {
                 </p>
               </div>
               <Link href="/map">
-                <button className="w-[244px] h-[60px] bg-[#6BEE32] rounded-[20px] font-semibold mt-9 cursor-pointer">
+                <button className="w-[244px] h-[60px] bg-[#6BEE32] rounded-[20px] font-semibold mt-9 cursor-pointer hover:border-2 hover:border-[#6BEE32] hover:bg-transparent">
                   START EXPLORING
                 </button>
               </Link>

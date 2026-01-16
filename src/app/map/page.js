@@ -10,6 +10,7 @@ import PopupSkeleton from "@/components/popup/PopupSkeleton";
 export default function Map() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const mapContainer = useRef(null);
   const map = useRef(null);
   const bremen = { lng: 8.8017, lat: 53.0793 };
@@ -17,15 +18,20 @@ export default function Map() {
 
   maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAP_ID;
 
-  // Initialize map
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
     if (map.current) return;
 
     map.current = new maptilersdk.Map({
       container: mapContainer.current,
-      style: maptilersdk.MapStyle.STREETS,
+      style: maptilersdk.MapStyle.BASIC,
       center: [bremen.lng, bremen.lat],
       zoom: zoom,
+      navigationControl: false,
     });
 
     const marker = new maptilersdk.Marker()
@@ -35,7 +41,9 @@ export default function Map() {
     marker.getElement().addEventListener("click", () => {
       setIsOpen(true);
     });
-  }, [bremen.lng, bremen.lat]);
+  }, [isClient, bremen.lng, bremen.lat]);
+
+  if (!isClient) return null;
 
   return (
     <div className="relative w-full h-screen">
