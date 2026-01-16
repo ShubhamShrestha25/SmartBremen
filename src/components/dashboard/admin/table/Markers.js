@@ -1,36 +1,58 @@
 "use client";
 
 import Image from "next/image";
-import { FaCheck, FaRegEye } from "react-icons/fa6";
-import { MdAddCircle } from "react-icons/md";
+import { FaCheck } from "react-icons/fa6";
+import { MdAddCircle, MdEdit } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { RxCross1 } from "react-icons/rx";
-
-const markers = [
-  {
-    id: 1,
-    image: "https://via.placeholder.com/60",
-    title: "Broken Road",
-    location: "Downtown Street",
-    description: "Road damage near the bridge",
-    status: "PENDING",
-  },
-  {
-    id: 2,
-    image: "https://via.placeholder.com/60",
-    title: "New Park",
-    location: "Green Avenue",
-    description: "Newly opened park",
-    status: "APPROVED",
-  },
-];
+import { useState } from "react";
+import MarkerPopup from "@/components/popup/MarkerPopup";
 
 const Markers = () => {
+  const [markers, setMarkers] = useState([
+    {
+      id: 1,
+      image: "https://via.placeholder.com/60",
+      title: "Broken Road",
+      location: "Downtown Street",
+      category: "Cat1",
+      description: "Road damage near the bridge",
+      status: "PENDING",
+    },
+    {
+      id: 2,
+      image: "https://via.placeholder.com/60",
+      title: "New Park",
+      location: "Green Avenue",
+      category: "Cat2",
+      description: "Newly opened park",
+      status: "APPROVED",
+    },
+  ]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+
+  const handleAddMarker = (newMarker) => {
+    setMarkers([...markers, { id: markers.length + 1, ...newMarker }]);
+  };
+
+  const handleDeleteMarker = () => {
+    console.log("marker removed");
+  };
+
+  const handleMarkerApprove = () => {
+    console.log("marker approved");
+  };
+
+  const handleMarkerDecline = () => {
+    console.log("marker declined");
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-800 ">Markers</h1>
-        <button>
+        <button onClick={() => setShowModal(true)}>
           <MdAddCircle className="text-3xl" />
         </button>
       </div>
@@ -106,19 +128,34 @@ const Markers = () => {
                 <td className="px-4 py-3 text-right">
                   {marker.status === "PENDING" ? (
                     <div className="flex justify-end gap-2">
-                      <button className="rounded-md bg-[#6BEE32] p-2.5 text-white">
+                      <button
+                        onClick={handleMarkerApprove}
+                        className="rounded-md bg-[#6BEE32] p-2.5 text-white"
+                      >
                         <FaCheck />
                       </button>
-                      <button className="rounded-md bg-[#FF4B4B] p-2.5 text-white">
+                      <button
+                        onClick={handleMarkerDecline}
+                        className="rounded-md bg-[#FF4B4B] p-2.5 text-white"
+                      >
                         <RxCross1 />
                       </button>
                     </div>
                   ) : (
                     <div className="flex justify-end gap-2">
-                      <button className="rounded-md bg-black p-2.5 text-white">
-                        <FaRegEye />
+                      <button
+                        onClick={() => {
+                          setShowModal(true);
+                          setSelectedMarker(marker);
+                        }}
+                        className="rounded-md bg-black p-2.5 text-white"
+                      >
+                        <MdEdit />
                       </button>
-                      <button className="rounded-md bg-[#FF4B4B] p-2.5 text-white">
+                      <button
+                        onClick={handleDeleteMarker}
+                        className="rounded-md bg-[#FF4B4B] p-2.5 text-white"
+                      >
                         <FaRegTrashAlt />
                       </button>
                     </div>
@@ -129,6 +166,15 @@ const Markers = () => {
           </tbody>
         </table>
       </div>
+      <MarkerPopup
+        show={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setSelectedMarker(null);
+        }}
+        onAdd={handleAddMarker}
+        marker={selectedMarker}
+      />
     </div>
   );
 };

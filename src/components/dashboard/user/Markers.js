@@ -1,27 +1,39 @@
 "use client";
 
 import Image from "next/image";
-import { FaRegEye } from "react-icons/fa6";
-import { MdAddCircle } from "react-icons/md";
+import { MdAddCircle, MdEdit } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
-
-const markers = [
-  {
-    id: 1,
-    image: "https://via.placeholder.com/60",
-    title: "Broken Road",
-    location: "Downtown Street",
-    description: "Road damage near the bridge",
-    status: "PENDING",
-  },
-];
+import { useState } from "react";
+import MarkerPopup from "@/components/popup/MarkerPopup";
 
 const Markers = () => {
+  const [markers, setMarkers] = useState([
+    {
+      id: 1,
+      image: "https://via.placeholder.com/60",
+      title: "Broken Road",
+      location: "Downtown Street",
+      category: "Cat1",
+      description: "Road damage near the bridge",
+      status: "PENDING",
+    },
+  ]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+
+  const handleAddMarker = (newMarker) => {
+    setMarkers([...markers, { id: markers.length + 1, ...newMarker }]);
+  };
+
+  const handleDeleteMarker = () => {
+    console.log("marker removed");
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-800 ">My Markers</h1>
-        <button>
+        <button onClick={() => setShowModal(true)}>
           <MdAddCircle className="text-3xl" />
         </button>
       </div>
@@ -38,6 +50,9 @@ const Markers = () => {
               </th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
                 Location
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                Category
               </th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
                 Description
@@ -76,7 +91,9 @@ const Markers = () => {
                 <td className="px-4 py-3 text-sm text-gray-600">
                   {marker.location}
                 </td>
-
+                <td className="px-4 py-3 text-sm text-gray-600">
+                  {marker.category}
+                </td>
                 <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
                   {marker.description}
                 </td>
@@ -96,10 +113,19 @@ const Markers = () => {
 
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
-                    <button className="rounded-md bg-black p-2.5 text-white">
-                      <FaRegEye />
+                    <button
+                      onClick={() => {
+                        setShowModal(true);
+                        setSelectedMarker(marker);
+                      }}
+                      className="rounded-md bg-black p-2.5 text-white"
+                    >
+                      <MdEdit />
                     </button>
-                    <button className="rounded-md bg-[#FF4B4B] p-2.5 text-white">
+                    <button
+                      onClick={handleDeleteMarker}
+                      className="rounded-md bg-[#FF4B4B] p-2.5 text-white"
+                    >
                       <FaRegTrashAlt />
                     </button>
                   </div>
@@ -109,6 +135,15 @@ const Markers = () => {
           </tbody>
         </table>
       </div>
+      <MarkerPopup
+        show={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setSelectedMarker(null);
+        }}
+        onAdd={handleAddMarker}
+        marker={selectedMarker}
+      />
     </div>
   );
 };
