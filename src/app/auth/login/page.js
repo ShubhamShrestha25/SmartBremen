@@ -1,60 +1,90 @@
 "use client";
 
+import useAuthStore from "@/store/useAuthStore";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const router = useRouter();
+  const { setRole } = useAuthStore();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ email, password });
+
+    const roleCheck = email === "admin123@gmail.com" ? "ADMIN" : "USER"; // just for test
+    setRole(roleCheck);
+
+    router.push("/auth/dashboard");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm bg-white p-6 rounded-2xl shadow"
-      >
-        <h1 className="text-2xl font-semibold mb-6 text-center">Login</h1>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
-            required
+    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-gray-100">
+      <Image
+        src="/images/smartbremen-bg.png"
+        alt="Background of Bremen"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover relative z-10"
+      />
+      <div className="flex items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20">
+        <div className="w-[350px]">
+          <Image
+            src="/images/windmill1.gif"
+            alt=""
+            width={300}
+            height={160}
+            className="rounded-full w-full h-auto"
+            priority
           />
         </div>
+        <div className="w-px rounded-xl bg-gray-300 h-80 mr-3" />
+        <form onSubmit={handleSubmit} className="w-xs">
+          <h1 className="text-2xl font-semibold mb-6 uppercase text-center">
+            Login
+          </h1>
 
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
-            required
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
+              required
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90"
-        >
-          Sign in
-        </button>
-        <p className="mt-4 text-sm text-center">
-          Don’t have an account?{" "}
-          <Link href="/auth/register" className="underline">
-            Sign up
-          </Link>
-        </p>
-      </form>
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90"
+          >
+            Sign in
+          </button>
+          <p className="mt-4 text-sm text-center">
+            Don’t have an account?{" "}
+            <Link href="/auth/register" className="underline">
+              Sign up
+            </Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }
