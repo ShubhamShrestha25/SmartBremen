@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const useAuthStore = create((set) => ({
-  role: "USER", // USER | ADMIN
+  role: "ADMIN", // USER | ADMIN
   setRole: (role) => set({ role }),
 }));
 

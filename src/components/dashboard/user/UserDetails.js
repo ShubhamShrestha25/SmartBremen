@@ -2,7 +2,7 @@ import React from "react";
 
 const UserDetails = () => {
   return (
-    <div className="max-w-sm bg-white rounded-lg shadow-lg border border-gray-200">
+    <div className="w-sm bg-white rounded-lg shadow-lg border border-gray-200">
       <div className="bg-gray-900 text-white px-4 py-3 rounded-t-lg">
         <h2 className="text-sm font-semibold tracking-wide">User Info</h2>
       </div>
