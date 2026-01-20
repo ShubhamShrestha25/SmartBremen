@@ -1,17 +1,15 @@
-import Image from "next/image";
+import ImageSlider from "../Slider";
 
 const MapPopup = () => {
+  const images = [
+    "/images/marker-popup-default.png",
+    "/images/city1.png",
+    "/images/help-bg.webp",
+  ];
+
   return (
     <div className="relative z-10 bg-white rounded-[18px] p-2 w-[350px] left-10 border-2 border-[#6BEE32]">
-      <div className="w-full h-[150px]">
-        <Image
-          src="/images/marker-popup-default.png"
-          alt=""
-          width={149}
-          height={80}
-          className="w-full h-full"
-        />
-      </div>
+      <ImageSlider images={images} />
       <div className="border-b pb-2 my-2">
         <h1 className="text-2xl font-medium">Bürgerpark</h1>
         <p className="text-sm">COUNTRY PARK</p>
