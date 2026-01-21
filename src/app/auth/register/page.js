@@ -31,8 +31,8 @@ export default function RegisterPage() {
         className="object-cover relative z-10"
       />
 
-      <div className="flex flex-row-reverse items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20">
-        <div className="w-[350px]">
+      <div className="flex flex-col items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20 lg:flex-row-reverse">
+        <div className="w-[250px] lg:w-[350px]">
           <Image
             src="/images/windmill1.gif"
             alt=""
@@ -42,12 +42,16 @@ export default function RegisterPage() {
             priority
           />
         </div>
-        <div className="w-px rounded-xl bg-gray-300 h-80 ml-4" />
+        <div className="w-[80%] rounded-xl bg-gray-300 h-px mr-3 lg:w-px lg:h-80" />
         <form onSubmit={handleSubmit} className="w-xs">
-          <h1 className="text-2xl font-semibold mb-6 text-center">REGISTER</h1>
+          <h1 className="text-lg font-semibold mb-6 uppercase text-center lg:text-2xl">
+            REGISTER
+          </h1>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-xs font-medium mb-1 lg:text-sm">
+              Email
+            </label>
             <input
               type="email"
               value={email}
@@ -58,7 +62,9 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label className="block text-xs font-medium mb-1 lg:text-sm">
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -69,7 +75,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-xs font-medium mb-1 lg:text-sm">
               Confirm password
             </label>
             <input
@@ -83,12 +89,12 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90"
+            className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90 text-sm lg:text-base"
           >
             Sign up
           </button>
 
-          <p className="mt-4 text-sm text-center">
+          <p className="mt-4 text-xs text-center lg:text-sm">
             Already have an account?{" "}
             <Link href="/auth/login" className="underline">
               Sign in

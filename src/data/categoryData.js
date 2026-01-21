@@ -27,6 +27,6 @@ export const categoryData = [
     id: 5,
     title: "Other",
     img: "/images/cat5.png",
-    color: "#A9A9A9",
+    color: "#4A4A4A",
   },
 ];

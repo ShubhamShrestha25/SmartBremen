@@ -32,8 +32,8 @@ export default function LoginPage() {
         sizes="100vw"
         className="object-cover relative z-10"
       />
-      <div className="flex items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20">
-        <div className="w-[350px]">
+      <div className="flex flex-col items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20 lg:flex-row">
+        <div className="w-[250px] lg:w-[350px]">
           <Image
             src="/images/windmill1.gif"
             alt=""
@@ -43,14 +43,16 @@ export default function LoginPage() {
             priority
           />
         </div>
-        <div className="w-px rounded-xl bg-gray-300 h-80 mr-3" />
+        <div className="w-[80%] rounded-xl bg-gray-300 h-px mr-3 lg:w-px lg:h-80" />
         <form onSubmit={handleSubmit} className="w-xs">
-          <h1 className="text-2xl font-semibold mb-6 uppercase text-center">
+          <h1 className="text-lg font-semibold mb-6 uppercase text-center lg:text-2xl">
             Login
           </h1>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-xs font-medium mb-1 lg:text-sm">
+              Email
+            </label>
             <input
               type="email"
               value={email}
@@ -61,7 +63,9 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label className="block text-xs font-medium mb-1 lg:text-sm">
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -73,11 +77,11 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90"
+            className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90 text-sm lg:text-base"
           >
             Sign in
           </button>
-          <p className="mt-4 text-sm text-center">
+          <p className="mt-4 text-xs text-center lg:text-sm">
             Don’t have an account?{" "}
             <Link href="/auth/register" className="underline">
               Sign up
