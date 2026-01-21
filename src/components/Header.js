@@ -10,9 +10,9 @@ const Header = () => {
   const { role } = useAuthStore();
 
   return (
-    <nav className="sticky top-0 z-50 flex justify-center items-center h-20 bg-white">
+    <nav className="sticky top-0 z-50 flex justify-center items-center h-15 bg-white lg:h-20">
       <div className="mainContainer flex justify-between items-center">
-        <Link href="/" className="w-[155px] h-[65px]">
+        <Link href="/" className="w-[120px] lg:w-[155px]">
           <Image
             src="/images/logo1.png"
             alt=""
@@ -21,9 +21,9 @@ const Header = () => {
             className="w-full h-auto"
           />
         </Link>
-        <div className="flex items-center gap-20">
+        <div className="flex items-center  gap-5 lg:gap-20">
           <div>
-            <ul className="uppercase flex gap-20 text-[#45414F]">
+            <ul className="uppercase flex gap-5 text-[#45414F] text-xs lg:gap-20">
               <Link
                 className={pathname === "/about" ? "text-[#FF4B4B]" : ""}
                 href="/about"
@@ -52,7 +52,7 @@ const Header = () => {
           </div>
           {role && (
             <Link href="/auth/dashboard">
-              <div className="h-8 w-8 rounded-full flex items-center justify-center font-bold border border-[#FF4B4B] text-sm">
+              <div className="h-6 w-6 rounded-full flex items-center justify-center font-bold border border-[#FF4B4B] text-xs lg:text-sm lg:h-8 lg:w-8">
                 JD
               </div>
             </Link>

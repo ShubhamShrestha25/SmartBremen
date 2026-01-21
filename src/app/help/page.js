@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Help() {
   return (
     <div className="flex justify-center">
-      <div className="relative w-screen min-h-[calc(100vh-80px)] overflow-hidden">
+      <div className="relative w-screen min-h-[calc(100vh-60px)] overflow-hidden lg:min-h-[calc(100vh-80px)]">
         <Image
           src="/images/help-bg.webp"
           alt="Background of Bremen"

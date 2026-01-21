@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="flex justify-center">
-      <div className="relative w-screen min-h-[calc(100vh-80px)] overflow-hidden">
+      <div className="relative w-screen min-h-[calc(100vh-60px)] overflow-hidden lg:min-h-[calc(100vh-80px)]">
         <Image
           src="/images/smartbremen-bg.png"
           alt="Background of Bremen"

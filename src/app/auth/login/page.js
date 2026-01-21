@@ -23,7 +23,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-gray-100">
+    <div className="min-h-[calc(100vh-60px)] flex items-center justify-center bg-gray-100 lg:min-h-[calc(100vh-80px)]">
       <Image
         src="/images/smartbremen-bg.png"
         alt="Background of Bremen"

@@ -21,7 +21,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-gray-100">
+    <div className="min-h-[calc(100vh-60px)] flex items-center justify-center bg-gray-100 lg:min-h-[calc(100vh-80px)]">
       <Image
         src="/images/smartbremen-bg.png"
         alt="Background of Bremen"
@@ -34,7 +34,7 @@ export default function RegisterPage() {
       <div className="flex flex-col items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20 lg:flex-row-reverse">
         <div className="w-[250px] lg:w-[350px]">
           <Image
-            src="/images/windmill1.gif"
+            src="/images/windmill.gif"
             alt=""
             width={300}
             height={160}
