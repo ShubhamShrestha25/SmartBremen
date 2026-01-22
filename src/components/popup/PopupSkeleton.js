@@ -2,7 +2,7 @@ import React from "react";
 
 const PopupSkeleton = () => {
   return (
-    <div className="relative z-10 bg-white rounded-[18px] p-2 w-[350px] left-10 border-2 border-[#6BEE32]">
+    <div className="relative z-10 bg-white rounded-[18px] p-2 w-[330px] mx-auto border-2 border-[#6BEE32] sm:mx-0 sm:left-10  lg:w-[350px]">
       <div className="w-full h-[150px] bg-gray-400 rounded-md animate-pulse" />
 
       <div className="pb-2 my-2 animate-pulse">

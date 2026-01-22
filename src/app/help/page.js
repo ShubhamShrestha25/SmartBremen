@@ -18,7 +18,7 @@ export default function Help() {
 
         <div className="relative z-20 flex justify-center">
           <div className="mainContainer">
-            <div className="mt-14 mb-6 lg:w-1/2">
+            <div className="mt-8 mb-4 sm:w-3/4 lg:mt-14 lg:w-1/2 lg:mb-6">
               <div>
                 <h1 className="text-[#FF4B4B] text-lg font-medium mb-1.5 lg:text-2xl">
                   Moin!
@@ -87,7 +87,7 @@ export default function Help() {
                 <h1 className="font-medium text-xs lg:text-base">
                   Need More Help?
                 </h1>
-                <button className="w-[125px] h-8 bg-[#6BEE32] rounded-[10px] font-semibold text-xs lg:w-[152px] lg:h-6 lg:text-base">
+                <button className="w-[125px] h-7 bg-[#6BEE32] rounded-[10px] font-semibold text-xs cursor-pointer lg:w-[152px] lg:h-10 lg:text-base">
                   CONTACT US
                 </button>
               </div>

@@ -23,7 +23,7 @@ const Header = () => {
         </Link>
         <div className="flex items-center  gap-5 lg:gap-20">
           <div>
-            <ul className="uppercase flex gap-5 text-[#45414F] text-xs lg:gap-20">
+            <ul className="uppercase flex gap-5 text-[#45414F] text-xs lg:text-base lg:gap-20">
               <Link
                 className={pathname === "/about" ? "text-[#FF4B4B]" : ""}
                 href="/about"

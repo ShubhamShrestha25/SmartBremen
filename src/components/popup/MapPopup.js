@@ -8,13 +8,13 @@ const MapPopup = () => {
   ];
 
   return (
-    <div className="relative z-10 bg-white rounded-[18px] p-2 w-[350px] left-10 border-2 border-[#6BEE32]">
+    <div className="relative z-10 bg-white rounded-[18px] p-2 w-[330px] mx-auto border-2 border-[#6BEE32] sm:mx-0 sm:left-10  lg:w-[350px]">
       <ImageSlider images={images} />
       <div className="border-b pb-2 my-2">
-        <h1 className="text-2xl font-medium">Bürgerpark</h1>
-        <p className="text-sm">COUNTRY PARK</p>
+        <h1 className="font-medium text-lg lg:text-2xl">Bürgerpark</h1>
+        <p className="text-xs lg:text-sm">COUNTRY PARK</p>
       </div>
-      <p className="text-[13px]">
+      <p className="text-[11px] lg:text-[13px]">
         Located in the heart of Bremen, the Bürgerpark is one of Germany’s most
         significant 19th-century landscape gardens. Spanning over 200 hectares,
         this "green lung" was uniquely established and funded by local citizens
@@ -26,8 +26,8 @@ const MapPopup = () => {
       </p>
 
       <div className="my-2">
-        <p className="text-sm mb-2">Highlights</p>
-        <ul className="text-xs ml-4 list-disc space-y-2">
+        <p className="text-xs mb-2 lg:text-sm">Highlights</p>
+        <ul className="text-[11px] ml-4 list-disc space-y-2 md:text-xs">
           <li>Nature Heritage</li>
           <li>Family Place</li>
           <li>Bio diversity</li>
