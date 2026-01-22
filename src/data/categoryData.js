@@ -1,7 +1,7 @@
 export const categoryData = [
   {
     id: 1,
-    title: "Social and Cultural Practices",
+    title: "Social & Cultural Practices",
     img: "/images/cat1.png",
     color: "#F59B2D",
   },

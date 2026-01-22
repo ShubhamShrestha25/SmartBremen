@@ -11,12 +11,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const router = useRouter();
-  const { setRole } = useAuthStore();
+  const { setRole, setUserId } = useAuthStore();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const roleCheck = email === "admin123@gmail.com" ? "ADMIN" : "USER"; // just for test
+    const roleCheck = email === "admin123@gmail.com" ? "ADMIN" : "USER";
+
+    setUserId("auth-1"); // just for test manually setting using id
     setRole(roleCheck);
 
     router.push("/auth/dashboard");

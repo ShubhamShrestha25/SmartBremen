@@ -1,6 +1,7 @@
+import { categoryData } from "@/data/categoryData";
 import { useEffect, useState } from "react";
 
-export default function MarkerPopup({ show, onClose, onSave, marker }) {
+export default function MarkerPopup({ show, onClose, marker }) {
   const [formData, setFormData] = useState(null);
 
   useEffect(() => {
@@ -8,8 +9,8 @@ export default function MarkerPopup({ show, onClose, onSave, marker }) {
       if (marker) {
         setFormData({
           title: marker.title || "",
-          location: marker.location || "",
-          category: marker.category || "",
+          location: marker.location.name || "",
+          category: marker.category.name || "",
           description: marker.description || "",
           images: marker.images || [],
           status: marker.status || "PENDING",
@@ -40,7 +41,7 @@ export default function MarkerPopup({ show, onClose, onSave, marker }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    //// either add new marker or update existing marker
     onClose();
   };
 
@@ -90,9 +91,11 @@ export default function MarkerPopup({ show, onClose, onSave, marker }) {
             <option value="" disabled>
               Select Category
             </option>
-            <option value="Cat 1">Cat 1</option>
-            <option value="Cat 2">Cat 2</option>
-            <option value="Cat 3">Cat 3</option>
+            {categoryData.map((cat) => (
+              <option key={cat.id} value={cat.title}>
+                {cat.title}
+              </option>
+            ))}
           </select>
 
           <textarea
@@ -127,7 +130,7 @@ export default function MarkerPopup({ show, onClose, onSave, marker }) {
                     key={idx}
                     className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded"
                   >
-                    <span className="text-sm">{img}</span>
+                    <span className="text-sm">{img.url}</span>
                     <button
                       type="button"
                       className="text-red-500 font-bold hover:text-red-700"

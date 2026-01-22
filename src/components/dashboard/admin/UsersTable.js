@@ -1,9 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import { FaCheck, FaRegEye } from "react-icons/fa6";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { RxCross1 } from "react-icons/rx";
 
 const users = [
   {

@@ -1,6 +1,25 @@
 export const fakeData = [
   {
     id: 123,
+    title: "Street Gathering at Marktplatz",
+    description:
+      "A small informal gathering observed at Marktplatz, where people used the public space for social interaction beyond its formal design.",
+    status: "Approved",
+    category: {
+      informalityCategoryId: "cat-1",
+      name: "Social & Cultural Practices",
+    },
+    author: {
+      authorId: "auth-1",
+      firstName: "Max",
+      lastName: "Mustermann",
+    },
+    device: {
+      deviceId: "dev-1",
+      tac: "12345678",
+      brand: "Apple",
+      model: "iPhone 14",
+    },
     location: {
       locationId: "loc-1",
       name: "Marktplatz",
@@ -9,50 +28,43 @@ export const fakeData = [
       subdistrict: "Altstadt",
       district: "Mitte",
     },
-
-    authors: [
-      { authorId: "auth-1", firstName: "Max", lastName: "Mustermann" },
-      { authorId: "auth-2", firstName: "Lina", lastName: "Schmidt" },
-    ],
-
-    devices: [
-      {
-        deviceId: "dev-1",
-        tac: "12345678",
-        brand: "Apple",
-        model: "iPhone 14",
-      },
-      {
-        deviceId: "dev-2",
-        tac: "87654321",
-        brand: "Samsung",
-        model: "Galaxy S22",
-      },
-    ],
-
-    category: {
-      informalityCategoryId: "cat-1",
-      name: "Social and Cultural Practices",
-    },
-
     images: [
       {
         imageId: "img-1",
         filename: "marktplatz_001.jpg",
         timestamp: "2026-01-21T10:15:00Z",
-        url: "https://nextcloud.example.com/f/marktplatz_001.jpg",
+        url: "/images/marker-popup-default.png",
       },
       {
         imageId: "img-2",
         filename: "marktplatz_002.jpg",
         timestamp: "2026-01-21T11:05:00Z",
-        url: "https://nextcloud.example.com/f/marktplatz_002.jpg",
+        url: "/images/city1.png",
       },
     ],
   },
 
   {
     id: 333,
+    title: "Informal Trade Along Schlachte",
+    description:
+      "Informal economic activity taking place along the Schlachte promenade, involving small-scale exchanges in a public waterfront area.",
+    status: "Pending",
+    category: {
+      informalityCategoryId: "cat-2",
+      name: "Informal Economies & Exchanges",
+    },
+    author: {
+      authorId: "auth-1",
+      firstName: "Jonas",
+      lastName: "Becker",
+    },
+    device: {
+      deviceId: "dev-3",
+      tac: "23456789",
+      brand: "Google",
+      model: "Pixel 7",
+    },
     location: {
       locationId: "loc-2",
       name: "Schlachte",
@@ -61,40 +73,43 @@ export const fakeData = [
       subdistrict: "Altstadt",
       district: "Mitte",
     },
-
-    authors: [
-      { authorId: "auth-3", firstName: "Jonas", lastName: "Becker" },
-      { authorId: "auth-4", firstName: "Mara", lastName: "Hoffmann" },
-    ],
-
-    devices: [
-      { deviceId: "dev-3", tac: "23456789", brand: "Google", model: "Pixel 7" },
-      { deviceId: "dev-4", tac: "34567890", brand: "Xiaomi", model: "Mi 11" },
-    ],
-
-    category: {
-      informalityCategoryId: "cat-2",
-      name: "Informal Economies & Exchanges",
-    },
-
     images: [
       {
         imageId: "img-3",
         filename: "schlachte_001.jpg",
         timestamp: "2026-01-22T09:40:00Z",
-        url: "https://nextcloud.example.com/f/schlachte_001.jpg",
+        url: "/images/help-bg.webp",
       },
       {
         imageId: "img-4",
         filename: "schlachte_002.jpg",
         timestamp: "2026-01-22T10:30:00Z",
-        url: "https://nextcloud.example.com/f/schlachte_002.jpg",
+        url: "/images/city1.png",
       },
     ],
   },
 
   {
     id: 223,
+    title: "Temporary Structures in Bürgerpark",
+    description:
+      "Temporary and improvised structures observed in Bürgerpark, reflecting flexible and informal use of park space.",
+    status: "Approved",
+    category: {
+      informalityCategoryId: "cat-3",
+      name: "Material & Spatial Informality",
+    },
+    author: {
+      authorId: "auth-2",
+      firstName: "Sophie",
+      lastName: "Neumann",
+    },
+    device: {
+      deviceId: "dev-6",
+      tac: "56789012",
+      brand: "Huawei",
+      model: "P40",
+    },
     location: {
       locationId: "loc-3",
       name: "Bürgerpark",
@@ -103,40 +118,43 @@ export const fakeData = [
       subdistrict: "Schwachhausen",
       district: "Schwachhausen",
     },
-
-    authors: [
-      { authorId: "auth-5", firstName: "Tim", lastName: "Krüger" },
-      { authorId: "auth-6", firstName: "Sophie", lastName: "Neumann" },
-    ],
-
-    devices: [
-      { deviceId: "dev-5", tac: "45678901", brand: "OnePlus", model: "9 Pro" },
-      { deviceId: "dev-6", tac: "56789012", brand: "Huawei", model: "P40" },
-    ],
-
-    category: {
-      informalityCategoryId: "cat-3",
-      name: "Material & Spatial Informality",
-    },
-
     images: [
       {
         imageId: "img-5",
         filename: "burgerpark_001.jpg",
         timestamp: "2026-01-23T14:10:00Z",
-        url: "https://nextcloud.example.com/f/burgerpark_001.jpg",
+        url: "/images/city1.png",
       },
       {
         imageId: "img-6",
         filename: "burgerpark_002.jpg",
         timestamp: "2026-01-23T15:00:00Z",
-        url: "https://nextcloud.example.com/f/burgerpark_002.jpg",
+        url: "/images/help-bg.webp",
       },
     ],
   },
 
   {
     id: 556,
+    title: "Waterfront Adaptations in Überseestadt",
+    description:
+      "Adaptations and informal landscape use identified in the Überseestadt area, shaped by proximity to water and ongoing development.",
+    status: "Approved",
+    category: {
+      informalityCategoryId: "cat-4",
+      name: "Landscape & Environmental Informality",
+    },
+    author: {
+      authorId: "auth-1",
+      firstName: "Anna",
+      lastName: "Weber",
+    },
+    device: {
+      deviceId: "dev-8",
+      tac: "78901234",
+      brand: "Nokia",
+      model: "8.3",
+    },
     location: {
       locationId: "loc-4",
       name: "Überseestadt",
@@ -145,40 +163,43 @@ export const fakeData = [
       subdistrict: "Walle",
       district: "Walle",
     },
-
-    authors: [
-      { authorId: "auth-7", firstName: "Leon", lastName: "Fischer" },
-      { authorId: "auth-8", firstName: "Anna", lastName: "Weber" },
-    ],
-
-    devices: [
-      { deviceId: "dev-7", tac: "67890123", brand: "Sony", model: "Xperia 5" },
-      { deviceId: "dev-8", tac: "78901234", brand: "Nokia", model: "8.3" },
-    ],
-
-    category: {
-      informalityCategoryId: "cat-4",
-      name: "Landscape & Environmental Informality",
-    },
-
     images: [
       {
         imageId: "img-7",
         filename: "ueberseestadt_001.jpg",
         timestamp: "2026-01-24T16:20:00Z",
-        url: "https://nextcloud.example.com/f/ueberseestadt_001.jpg",
+        url: "/images/city1.png",
       },
       {
         imageId: "img-8",
         filename: "ueberseestadt_002.jpg",
         timestamp: "2026-01-24T17:10:00Z",
-        url: "https://nextcloud.example.com/f/ueberseestadt_002.jpg",
+        url: "/images/marker-popup-default.png",
       },
     ],
   },
 
   {
     id: 888,
+    title: "Unclassified Activity Near Universum Bremen",
+    description:
+      "An observed activity near Universum Bremen that does not clearly fit into predefined categories but indicates informal use of space.",
+    status: "Approved",
+    category: {
+      informalityCategoryId: "cat-5",
+      name: "Other",
+    },
+    author: {
+      authorId: "auth-2",
+      firstName: "Paul",
+      lastName: "Zimmermann",
+    },
+    device: {
+      deviceId: "dev-9",
+      tac: "89012345",
+      brand: "Motorola",
+      model: "Edge 30",
+    },
     location: {
       locationId: "loc-5",
       name: "Universum Bremen",
@@ -187,44 +208,18 @@ export const fakeData = [
       subdistrict: "Horn-Lehe",
       district: "Horn-Lehe",
     },
-
-    authors: [
-      { authorId: "auth-9", firstName: "Paul", lastName: "Zimmermann" },
-      { authorId: "auth-10", firstName: "Nina", lastName: "Koch" },
-    ],
-
-    devices: [
-      {
-        deviceId: "dev-9",
-        tac: "89012345",
-        brand: "Motorola",
-        model: "Edge 30",
-      },
-      {
-        deviceId: "dev-10",
-        tac: "90123456",
-        brand: "Asus",
-        model: "Zenfone 9",
-      },
-    ],
-
-    category: {
-      informalityCategoryId: "cat-5",
-      name: "Other",
-    },
-
     images: [
       {
         imageId: "img-9",
         filename: "universum_001.jpg",
         timestamp: "2026-01-25T13:30:00Z",
-        url: "https://nextcloud.example.com/f/universum_001.jpg",
+        url: "/images/marker-popup-default.png",
       },
       {
         imageId: "img-10",
         filename: "universum_002.jpg",
         timestamp: "2026-01-25T14:15:00Z",
-        url: "https://nextcloud.example.com/f/universum_002.jpg",
+        url: "/images/help-bg.webp",
       },
     ],
   },

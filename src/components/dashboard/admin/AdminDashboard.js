@@ -1,12 +1,15 @@
 "use client";
 
-import MarkersChart from "./charts/MarkersChart";
+import UsersTable from "./UsersTable";
+import MarkersTable from "../MarkersTable";
 import UsersChart from "./charts/UsersChart";
-import Marker from "./table/Markers";
-import Users from "./table/Users";
 import LogoutBtn from "@/components/LogoutBtn";
+import MarkersChart from "./charts/MarkersChart";
+import { fakeData } from "@/data/fakeData";
 
 export default function AdminDashboard() {
+  const unfilteredMarkersData = fakeData;
+
   return (
     <div className="space-y-10">
       <div className="flex justify-between items-center">
@@ -19,8 +22,8 @@ export default function AdminDashboard() {
       </div>
 
       <div className="space-y-10">
-        <Users />
-        <Marker />
+        <UsersTable />
+        <MarkersTable markersData={unfilteredMarkersData} />
       </div>
     </div>
   );
