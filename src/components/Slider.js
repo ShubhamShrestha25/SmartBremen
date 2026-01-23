@@ -6,32 +6,62 @@ import Image from "next/image";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
+import Video from "yet-another-react-lightbox/plugins/video";
+
+const getMediaType = (url = "") => {
+  if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return "video";
+  if (/\.(png|jpe?g|webp|gif|svg)$/i.test(url)) return "image";
+  return "unknown";
+};
+
 const ImageSlider = ({ images = [] }) => {
   const [current, setCurrent] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
-  const slides = useMemo(() => images.map((src) => ({ src })), [images]);
+  const slides = useMemo(() => {
+    return images
+      .filter((img) => img?.url)
+      .map((img) => {
+        const type = getMediaType(img.url);
 
-  const next = () => {
-    setCurrent((prev) => (prev + 1) % images.length);
-  };
-
-  const prev = () => {
-    setCurrent((prev) => (prev - 1 + images.length) % images.length);
-  };
+        return type === "video"
+          ? { type: "video", sources: [{ src: img.url }] }
+          : { src: img.url };
+      });
+  }, [images]);
 
   if (!images.length) return null;
+
+  const currentUrl = images[current]?.url;
+  if (!currentUrl) return null;
+
+  const currentType = getMediaType(currentUrl);
+
+  const next = () => setCurrent((prev) => (prev + 1) % images.length);
+  const prev = () =>
+    setCurrent((prev) => (prev - 1 + images.length) % images.length);
 
   return (
     <>
       <div className="relative w-full h-40 overflow-hidden rounded-xl">
-        <Image
-          src={images[current]}
-          alt=""
-          fill
-          className="object-cover cursor-pointer"
-          onClick={() => setIsOpen(true)}
-        />
+        {currentType === "video" ? (
+          <video
+            src={currentUrl}
+            className="w-full h-full object-cover cursor-pointer"
+            playsInline
+            muted
+            controls
+            onClick={() => setIsOpen(true)}
+          />
+        ) : (
+          <Image
+            src={currentUrl}
+            alt={images[current]?.filename ?? ""}
+            fill
+            className="object-cover cursor-pointer"
+            onClick={() => setIsOpen(true)}
+          />
+        )}
 
         {images.length > 1 && (
           <>
@@ -52,10 +82,10 @@ const ImageSlider = ({ images = [] }) => {
             </button>
 
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-              {images.map((_, i) => (
+              {images.map((img, i) => (
                 <span
-                  key={i}
-                  className={`w-2 h-2 rounded-full ${
+                  key={img?.imageId ?? i}
+                  className={`w-2 h-2 rounded-full border ${
                     i === current ? "bg-white" : "bg-white/50"
                   }`}
                 />
@@ -69,8 +99,8 @@ const ImageSlider = ({ images = [] }) => {
         open={isOpen}
         close={() => setIsOpen(false)}
         slides={slides}
+        plugins={[Video]}
         index={current}
-        // keeps your slider index in sync when the user navigates in fullscreen
         view={{ closeOnBackdropClick: true }}
         on={{
           view: ({ index }) => setCurrent(index),

@@ -180,6 +180,12 @@ export const fakeData = [
         timestamp: "2026-01-24T17:10:00Z",
         url: "/images/marker-popup-default.png",
       },
+      {
+        imageId: "vid-1",
+        filename: "ueberseestadt_001.mp4",
+        timestamp: "2026-01-24T16:20:00Z",
+        url: "/videos/IMG_4426.mov",
+      },
     ],
   },
 

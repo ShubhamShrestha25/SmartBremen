@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import * as maptilersdk from "@maptiler/sdk";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 
@@ -12,19 +12,26 @@ import { fakeData } from "@/data/fakeData";
 import { categoryData } from "@/data/categoryData";
 
 export default function Map() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [mapReady, setMapReady] = useState(false);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [selectedMarker, setSelectedMarker] = useState(null);
+
+  // ✅ filter state lives here
+  const [activeCategory, setActiveCategory] = useState(null);
+
   const mapContainer = useRef(null);
   const map = useRef(null);
+
   const markersRef = useRef([]);
 
   const bremen = { lng: 8.8017, lat: 53.0793 };
   const zoom = 14;
 
-  maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAP_ID;
+  maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAP_ID || "";
 
   useEffect(() => {
     setIsClient(true);
@@ -49,27 +56,40 @@ export default function Map() {
     m.on("load", () => setMapReady(true));
 
     return () => {
-      markersRef.current.forEach((mk) => mk.remove());
+      // remove markers + listeners
+      markersRef.current.forEach(({ marker, el, onClick }) => {
+        el.removeEventListener("click", onClick);
+        marker.remove();
+      });
       markersRef.current = [];
+
       m.remove();
       map.current = null;
       setMapReady(false);
     };
-  }, [isClient, zoom]);
+  }, [isClient]);
 
-  // Add markers once the map is ready
+  // ✅ compute filtered dataset
+  const filteredData = useMemo(() => {
+    if (!activeCategory) return fakeData;
+    return fakeData.filter((d) => d.category?.name === activeCategory);
+  }, [activeCategory]);
+
+  // Add markers whenever mapReady OR filter changes
   useEffect(() => {
     if (!mapReady || !map.current) return;
 
-    // clean old markers
-    markersRef.current.forEach((mk) => mk.remove());
+    // clean old markers + listeners
+    markersRef.current.forEach(({ marker, el, onClick }) => {
+      el.removeEventListener("click", onClick);
+      marker.remove();
+    });
     markersRef.current = [];
 
-    const newMarkers = fakeData.map((data) => {
-      // simplest matching: categoryData.title === fakeData.category.name
-      const cat = categoryData.find((c) => c.title === data.category.name);
+    const entries = filteredData.map((data) => {
+      // match category icon
+      const cat = categoryData.find((c) => c.title === data.category?.name);
 
-      // custom marker element (image)
       const el = document.createElement("img");
       el.src = (cat && cat.img) || "/images/default-marker.png";
       el.alt = (cat && cat.title) || "Marker";
@@ -77,42 +97,55 @@ export default function Map() {
       el.style.height = "30px";
       el.style.cursor = "pointer";
 
-      const mk = new maptilersdk.Marker({ element: el })
+      const marker = new maptilersdk.Marker({ element: el })
         .setLngLat([data.location.lng, data.location.lat])
         .addTo(map.current);
 
-      el.addEventListener("click", () => {
+      const onClick = () => {
+        setSelectedMarker(data);
         setIsOpen(true);
-        // setIsLoading(true) 
-        // setSelected(data) 
-      });
+      };
 
-      return mk;
+      el.addEventListener("click", onClick);
+
+      return { marker, el, onClick, data };
     });
 
-    markersRef.current = newMarkers;
+    markersRef.current = entries;
 
-    // cleanup listeners + markers on rerun/unmount
     return () => {
-      newMarkers.forEach((mk) => mk.remove());
-      markersRef.current = [];
+      entries.forEach(({ marker, el, onClick }) => {
+        el.removeEventListener("click", onClick);
+        marker.remove();
+      });
     };
-  }, [mapReady]);
+  }, [mapReady, filteredData]);
+
+  const closePopup = () => {
+    setIsOpen(false);
+    setSelectedMarker(null);
+    setIsLoading(false);
+  };
 
   if (!isClient) return null;
 
+
   return (
     <div className="relative w-full h-screen">
-      <MapFilter />
+      <MapFilter
+        activeCategory={activeCategory}
+        onChangeCategory={setActiveCategory}
+      />
+
       <div ref={mapContainer} className="absolute w-full h-full" />
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center">
           <div
-            onClick={() => setIsOpen(false)}
+            onClick={closePopup}
             className="absolute w-full h-full bg-transparent"
           />
-          {isLoading ? <PopupSkeleton /> : <MapPopup />}
+          {isLoading ? <PopupSkeleton /> : <MapPopup data={selectedMarker} />}
         </div>
       )}
     </div>

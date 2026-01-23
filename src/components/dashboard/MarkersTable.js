@@ -5,11 +5,21 @@ import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { RxCross1 } from "react-icons/rx";
 import { FaRegTrashAlt } from "react-icons/fa";
-import "yet-another-react-lightbox/styles.css";
-import Lightbox from "yet-another-react-lightbox";
 import { MdAddCircle, MdEdit } from "react-icons/md";
+
 import MarkerPopup from "@/components/popup/MarkerPopup";
 import useAuthStore from "@/store/useAuthStore";
+
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import Video from "yet-another-react-lightbox/plugins/video";
+
+
+const getMediaType = (url = "") => {
+  if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return "video";
+  if (/\.(png|jpe?g|webp|gif|svg)$/i.test(url)) return "image";
+  return "unknown";
+};
 
 const Markers = ({ markersData }) => {
   const [current, setCurrent] = useState(0);
@@ -21,8 +31,19 @@ const Markers = ({ markersData }) => {
 
   const slides = useMemo(() => {
     return (selectedMarker?.images ?? [])
-      .filter((img) => img?.url)
-      .map((img) => ({ src: img.url }));
+      .map((img) => img?.url)
+      .filter(Boolean)
+      .map((url) => {
+        const type = getMediaType(url);
+
+        if (type === "video") {
+          return {
+            type: "video",
+            sources: [{ src: url }],
+          };
+        }
+        return { src: url };
+      });
   }, [selectedMarker]);
 
   const handleDeleteMarker = () => {
@@ -186,6 +207,7 @@ const Markers = ({ markersData }) => {
         open={isOpen}
         close={() => setIsOpen(false)}
         slides={slides}
+        plugins={[Video]}
         index={current}
         view={{ closeOnBackdropClick: true }}
         on={{
