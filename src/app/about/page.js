@@ -18,7 +18,7 @@ export default function About() {
 
         <div className="relative z-20 flex justify-center">
           <div className="mainContainer">
-            <div className="space-y-4 mt-8 mb-4 sm:w-3/4 lg:mt-14 lg:mb-6 lg:w-1/2">
+            <div className="space-y-4 mt-8 mb-4 sm:w-[60%] lg:mt-14 lg:mb-6 xl:w-1/2">
               <div>
                 <h1 className="text-[#FF4B4B] text-lg font-medium mb-2 lg:text-2xl">
                   About Smart Bremen

@@ -34,7 +34,7 @@ export default function LoginPage() {
         sizes="100vw"
         className="object-cover relative z-10"
       />
-      <div className="flex flex-col items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20 lg:flex-row">
+      <div className="flex flex-col items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20 my-5 lg:flex-row">
         <div className="w-[250px] lg:w-[350px]">
           <Image
             src="/images/windmill.gif"
