@@ -9,11 +9,7 @@ import useAuthStore from "@/store/useAuthStore";
 export default function UserDashboard() {
   const { userId } = useAuthStore();
 
-  console.log(userId);
-
-  const filteredMarkersData = fakeData.filter(
-    (item) => item.author.authorId === userId,
-  );
+  const filteredMarkersData = fakeData.filter((item) => item.userId === userId);
 
   return (
     <div className="space-y-10">

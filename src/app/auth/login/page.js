@@ -18,7 +18,7 @@ export default function LoginPage() {
 
     const roleCheck = email === "admin123@gmail.com" ? "ADMIN" : "USER";
 
-    setUserId("auth-1"); // just for test manually setting using id
+    setUserId("user-1"); // just for test manually setting using id
     setRole(roleCheck);
 
     router.push("/auth/dashboard");

@@ -9,11 +9,15 @@ export default function MarkerPopup({ show, onClose, marker }) {
       if (marker) {
         setFormData({
           title: marker.title || "",
-          location: marker.location.name || "",
-          category: marker.category.name || "",
+          location: marker.location?.name || "",
+          category: marker.category?.name || "",
           description: marker.description || "",
           images: marker.images || [],
           status: marker.status || "PENDING",
+          author: {
+            firstName: marker.author?.firstName || "",
+            lastName: marker.author?.lastName || "",
+          },
         });
       } else {
         setFormData({
@@ -23,6 +27,10 @@ export default function MarkerPopup({ show, onClose, marker }) {
           description: "",
           images: [],
           status: "PENDING",
+          author: {
+            firstName: "",
+            lastName: "",
+          },
         });
       }
     };
@@ -31,21 +39,33 @@ export default function MarkerPopup({ show, onClose, marker }) {
   }, [marker]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleAuthorChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      author: {
+        ...prev.author,
+        [name]: value,
+      },
+    }));
   };
 
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
-    setFormData({ ...formData, images: files.map((f) => f.name) });
+    // keeping your current behavior (store names). If you want actual File objects, tell me.
+    setFormData((prev) => ({ ...prev, images: files.map((f) => f.name) }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    //// either add new marker or update existing marker
+    // either add new marker or update existing marker
     onClose();
   };
 
-  if (!show) return null;
+  if (!show || !formData) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-auto">
@@ -56,6 +76,7 @@ export default function MarkerPopup({ show, onClose, marker }) {
         >
           ✕
         </button>
+
         <h2 className="text-xl font-bold mb-4">
           {marker ? "Edit Marker" : "Add Marker"}
         </h2>
@@ -98,6 +119,29 @@ export default function MarkerPopup({ show, onClose, marker }) {
             ))}
           </select>
 
+          {/* Author */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              name="firstName"
+              placeholder="Author First Name"
+              value={formData.author.firstName}
+              onChange={handleAuthorChange}
+              className="w-1/2 border px-3 py-2 rounded"
+              required
+            />
+
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Author Last Name"
+              value={formData.author.lastName}
+              onChange={handleAuthorChange}
+              className="w-1/2 border px-3 py-2 rounded"
+              required
+            />
+          </div>
+
           <textarea
             name="description"
             placeholder="Description"
@@ -130,15 +174,18 @@ export default function MarkerPopup({ show, onClose, marker }) {
                     key={idx}
                     className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded"
                   >
-                    <span className="text-sm">{img.url}</span>
+                    <span className="text-sm">
+                      {typeof img === "string" ? img : img?.url}
+                    </span>
+
                     <button
                       type="button"
                       className="text-red-500 font-bold hover:text-red-700"
                       onClick={() =>
-                        setFormData({
-                          ...formData,
-                          images: formData.images.filter((_, i) => i !== idx),
-                        })
+                        setFormData((prev) => ({
+                          ...prev,
+                          images: prev.images.filter((_, i) => i !== idx),
+                        }))
                       }
                     >
                       ×
