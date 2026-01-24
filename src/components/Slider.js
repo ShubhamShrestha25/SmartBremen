@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import Image from "next/image";
+import { useMemo, useState } from "react";
+
+import { IoPlayCircle } from "react-icons/io5";
 
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -45,14 +47,17 @@ const ImageSlider = ({ images = [] }) => {
     <>
       <div className="relative w-full h-40 overflow-hidden rounded-xl">
         {currentType === "video" ? (
-          <video
-            src={currentUrl}
-            className="w-full h-full object-cover cursor-pointer"
-            playsInline
-            muted
-            controls
-            onClick={() => setIsOpen(true)}
-          />
+          <div className="relative" onClick={() => setIsOpen(true)}>
+            <video
+              src={currentUrl}
+              className="w-full h-full object-cover cursor-pointer"
+              playsInline
+              muted
+            />
+            <div>
+              <IoPlayCircle className="absolute top-20 left-1/2 z-40 -translate-x-1/2 -translate-y-1/2 cursor-pointer text-5xl shadow text-[#6BEE32]" />
+            </div>
+          </div>
         ) : (
           <Image
             src={currentUrl}

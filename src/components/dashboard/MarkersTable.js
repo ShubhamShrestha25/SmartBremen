@@ -110,13 +110,22 @@ const Markers = ({ markersData }) => {
                     }}
                     className="relative w-18 h-14 border border-[#6BEE32] rounded-xl flex justify-center items-center cursor-pointer md:w-20 md:h-15"
                   >
-                    <Image
-                      src={marker?.images[0].url}
-                      alt=""
-                      fill
-                      sizes="(min-width: 768px) 80px, 72px"
-                      className="w-full h-full rounded-xl"
-                    />
+                    {getMediaType(marker?.images[0].url) === "image" ? (
+                      <Image
+                        src={marker?.images[0].url}
+                        alt=""
+                        fill
+                        sizes="(min-width: 768px) 80px, 72px"
+                        className="w-full h-full rounded-xl"
+                      />
+                    ) : (
+                      <video
+                        src={marker?.images[0].url}
+                        className="w-full h-full object-cover rounded-xl"
+                        playsInline
+                        muted
+                      />
+                    )}
                     <div className="absolute -top-2.5 -right-2.5 flex justify-center items-center w-6 h-6 bg-black text-white rounded-full text-sm">
                       +{marker?.images.length - 1}
                     </div>

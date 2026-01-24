@@ -4,8 +4,6 @@ import { IoLocationSharp } from "react-icons/io5";
 import { PiPersonArmsSpreadFill } from "react-icons/pi";
 
 const MapPopup = ({ data }) => {
-  console.log(data);
-
   return (
     <div className="relative z-10 bg-white rounded-[18px] p-2 w-[330px] mx-auto border-2 border-[#6BEE32] sm:mx-0 sm:left-10  lg:w-[350px]">
       <ImageSlider images={data?.images} />

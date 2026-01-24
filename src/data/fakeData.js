@@ -169,6 +169,12 @@ export const fakeData = [
     },
     images: [
       {
+        imageId: "vid-1",
+        filename: "ueberseestadt_001.mp4",
+        timestamp: "2026-01-24T16:20:00Z",
+        url: "/videos/IMG_4426.mov",
+      },
+      {
         imageId: "img-7",
         filename: "ueberseestadt_001.jpg",
         timestamp: "2026-01-24T16:20:00Z",
@@ -179,12 +185,6 @@ export const fakeData = [
         filename: "ueberseestadt_002.jpg",
         timestamp: "2026-01-24T17:10:00Z",
         url: "/images/marker-popup-default.png",
-      },
-      {
-        imageId: "vid-1",
-        filename: "ueberseestadt_001.mp4",
-        timestamp: "2026-01-24T16:20:00Z",
-        url: "/videos/IMG_4426.mov",
       },
     ],
   },
