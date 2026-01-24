@@ -1,23 +1,77 @@
 "use client";
 
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+import useAuthStore from "@/store/useAuthStore";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+  const { setRole, setUserId } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      setError("Passwords do not match");
       return;
     }
 
-    console.log({ email, password });
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Create user profile in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        role: "artist", // Default role for new users
+        uploadEnabled: false, // Admin must enable upload access
+        createdAt: Timestamp.now(),
+      });
+
+      // Set auth state
+      setUserId(user.uid);
+      setRole("USER");
+
+      router.push("/auth/dashboard");
+    } catch (err) {
+      console.error("Registration error:", err);
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          setError("This email is already registered");
+          break;
+        case "auth/invalid-email":
+          setError("Invalid email address");
+          break;
+        case "auth/weak-password":
+          setError("Password is too weak");
+          break;
+        default:
+          setError("Failed to create account. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -87,11 +141,18 @@ export default function RegisterPage() {
             />
           </div>
 
+          {error && (
+            <p className="mb-4 text-red-500 text-xs text-center lg:text-sm">
+              {error}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90 text-sm lg:text-base"
+            disabled={loading}
+            className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90 text-sm lg:text-base disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign up
+            {loading ? "Creating account..." : "Sign up"}
           </button>
 
           <p className="mt-4 text-xs text-center lg:text-sm">

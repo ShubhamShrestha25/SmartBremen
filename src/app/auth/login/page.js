@@ -1,5 +1,8 @@
 "use client";
 
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { getUserProfile } from "@/lib/firestore";
 import useAuthStore from "@/store/useAuthStore";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,19 +12,49 @@ import { useState } from "react";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
   const { setRole, setUserId } = useAuthStore();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const roleCheck = email === "admin123@gmail.com" ? "ADMIN" : "USER";
+    try {
+      // Sign in with Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    setUserId("auth-1"); // just for test manually setting using id
-    setRole(roleCheck);
+      // Get user profile from Firestore
+      const profile = await getUserProfile(user.uid);
 
-    router.push("/auth/dashboard");
+      if (profile) {
+        setUserId(user.uid);
+        setRole(profile.role === "admin" ? "ADMIN" : "USER");
+        router.push("/auth/dashboard");
+      } else {
+        setError("User profile not found. Please contact support.");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      switch (err.code) {
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+        case "auth/invalid-credential":
+          setError("Invalid email or password");
+          break;
+        case "auth/too-many-requests":
+          setError("Too many failed attempts. Please try again later.");
+          break;
+        default:
+          setError("Failed to sign in. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,11 +110,18 @@ export default function LoginPage() {
             />
           </div>
 
+          {error && (
+            <p className="mb-4 text-red-500 text-xs text-center lg:text-sm">
+              {error}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90 text-sm lg:text-base"
+            disabled={loading}
+            className="w-full bg-black text-white py-2 rounded-lg hover:opacity-90 text-sm lg:text-base disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </button>
           <p className="mt-4 text-xs text-center lg:text-sm">
             Don’t have an account?{" "}

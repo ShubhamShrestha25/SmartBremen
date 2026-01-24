@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { RxCross1 } from "react-icons/rx";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -10,14 +10,16 @@ import Lightbox from "yet-another-react-lightbox";
 import { MdAddCircle, MdEdit } from "react-icons/md";
 import MarkerPopup from "@/components/popup/MarkerPopup";
 import useAuthStore from "@/store/useAuthStore";
+import { updateImageStatus, deleteImage } from "@/lib/firestore";
 
-const Markers = ({ markersData }) => {
+const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => {
   const [current, setCurrent] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [actionLoading, setActionLoading] = useState(null);
 
-  const { role } = useAuthStore();
+  const { role, userId } = useAuthStore();
 
   const slides = useMemo(() => {
     return (selectedMarker?.images ?? [])
@@ -25,16 +27,57 @@ const Markers = ({ markersData }) => {
       .map((img) => ({ src: img.url }));
   }, [selectedMarker]);
 
-  const handleDeleteMarker = () => {
-    console.log("marker removed");
+  const handleDeleteMarker = async (markerId) => {
+    if (!confirm("Are you sure you want to delete this marker?")) return;
+    
+    setActionLoading(markerId);
+    try {
+      const success = await deleteImage(markerId);
+      if (success) {
+        onRefresh?.();
+      } else {
+        alert("Failed to delete marker");
+      }
+    } catch (error) {
+      console.error("Error deleting marker:", error);
+      alert("Error deleting marker");
+    } finally {
+      setActionLoading(null);
+    }
   };
 
-  const handleMarkerApprove = () => {
-    console.log("marker approved");
+  const handleMarkerApprove = async (markerId) => {
+    setActionLoading(markerId);
+    try {
+      const success = await updateImageStatus(markerId, "approved", userId);
+      if (success) {
+        onRefresh?.();
+      } else {
+        alert("Failed to approve marker");
+      }
+    } catch (error) {
+      console.error("Error approving marker:", error);
+      alert("Error approving marker");
+    } finally {
+      setActionLoading(null);
+    }
   };
 
-  const handleMarkerDecline = () => {
-    console.log("marker declined");
+  const handleMarkerDecline = async (markerId) => {
+    setActionLoading(markerId);
+    try {
+      const success = await updateImageStatus(markerId, "rejected", userId);
+      if (success) {
+        onRefresh?.();
+      } else {
+        alert("Failed to reject marker");
+      }
+    } catch (error) {
+      console.error("Error rejecting marker:", error);
+      alert("Error rejecting marker");
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   return (
@@ -89,34 +132,41 @@ const Markers = ({ markersData }) => {
                     className="relative w-20 h-15 border border-[#6BEE32] rounded-xl flex justify-center items-center cursor-pointer"
                   >
                     <Image
-                      src={marker?.images[0].url}
-                      alt=""
-                      width={16}
-                      height={16}
-                      className="w-full h-full rounded-xl"
+                      src={marker?.images?.[0]?.url || marker?._original?.thumbnailUrl || "/images/marker-popup-default.png"}
+                      alt={marker?.title || "Marker"}
+                      width={80}
+                      height={60}
+                      className="w-full h-full rounded-xl object-cover"
                     />
-                    <div className="absolute -top-2.5 -right-2.5 flex justify-center items-center w-6 h-6 bg-black text-white rounded-full text-sm">
-                      +{marker?.images.length - 1}
-                    </div>
+                    {(marker?.images?.length || 0) > 1 && (
+                      <div className="absolute -top-2.5 -right-2.5 flex justify-center items-center w-6 h-6 bg-black text-white rounded-full text-sm">
+                        +{(marker?.images?.length || 1) - 1}
+                      </div>
+                    )}
                   </div>
                 </td>
 
                 <td className="px-4 py-3 text-sm font-medium text-gray-800">
-                  {marker.title}
+                  {marker?.title || "Untitled"}
                 </td>
 
                 <td className="px-4 py-3 text-sm text-gray-600">
-                  {marker.author.firstName + " " + marker.author.lastName}
+                  {(marker?.author?.firstName || "") + " " + (marker?.author?.lastName || "")}
                 </td>
 
                 <td className="px-4 py-3 text-sm text-gray-600">
-                  {marker.location.name}
+                  {marker?.location?.name || `${marker?.location?.lat?.toFixed(4) || "?"}, ${marker?.location?.lng?.toFixed(4) || "?"}`}
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-600 ">
-                  {marker.category.name}
+                  <span 
+                    className="px-2 py-1 rounded text-xs"
+                    style={{ backgroundColor: marker?.category?.color + "20", color: marker?.category?.color }}
+                  >
+                    {marker?.category?.name || "Uncategorized"}
+                  </span>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
-                  {marker.description}
+                  {marker?.description || "No description"}
                 </td>
 
                 <td className="px-4 py-3">
@@ -125,6 +175,8 @@ const Markers = ({ markersData }) => {
                          ${
                            marker.status?.toLowerCase() === "pending"
                              ? "bg-yellow-100 text-yellow-800"
+                             : marker.status?.toLowerCase() === "rejected"
+                             ? "bg-red-100 text-red-800"
                              : "bg-green-100 text-green-800"
                          }`}
                   >
@@ -133,18 +185,24 @@ const Markers = ({ markersData }) => {
                 </td>
 
                 <td className="px-4 py-3 text-right">
-                  {role === "ADMIN" &&
+                  {actionLoading === marker.id ? (
+                    <div className="flex justify-end">
+                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
+                    </div>
+                  ) : role === "ADMIN" &&
                   marker.status?.toLowerCase() === "pending" ? (
                     <div className="flex justify-end gap-2">
                       <button
-                        onClick={handleMarkerApprove}
-                        className="rounded-md bg-[#6BEE32] p-2.5 text-white"
+                        onClick={() => handleMarkerApprove(marker.id)}
+                        className="rounded-md bg-[#6BEE32] p-2.5 text-white hover:bg-green-600 transition-colors"
+                        title="Approve"
                       >
                         <FaCheck />
                       </button>
                       <button
-                        onClick={handleMarkerDecline}
-                        className="rounded-md bg-[#FF4B4B] p-2.5 text-white"
+                        onClick={() => handleMarkerDecline(marker.id)}
+                        className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
+                        title="Reject"
                       >
                         <RxCross1 />
                       </button>
@@ -156,13 +214,15 @@ const Markers = ({ markersData }) => {
                           setShowModal(true);
                           setSelectedMarker(marker);
                         }}
-                        className="rounded-md bg-black p-2.5 text-white"
+                        className="rounded-md bg-black p-2.5 text-white hover:bg-gray-800 transition-colors"
+                        title="Edit"
                       >
                         <MdEdit />
                       </button>
                       <button
-                        onClick={handleDeleteMarker}
-                        className="rounded-md bg-[#FF4B4B] p-2.5 text-white"
+                        onClick={() => handleDeleteMarker(marker.id)}
+                        className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
+                        title="Delete"
                       >
                         <FaRegTrashAlt />
                       </button>
