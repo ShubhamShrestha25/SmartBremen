@@ -47,7 +47,7 @@ export default function LoginPage() {
         </div>
         <div className="w-[80%] rounded-xl bg-gray-300 h-px mr-3 lg:w-px lg:h-80" />
         <form onSubmit={handleSubmit} className="w-xs">
-          <h1 className="text-lg font-semibold mb-6 uppercase text-center lg:text-2xl">
+          <h1 className="text-lg font-semibold mb-6 uppercase text-center lg:text-xl xl:text-2xl">
             Login
           </h1>
 

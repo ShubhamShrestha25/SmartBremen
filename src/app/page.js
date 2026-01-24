@@ -46,7 +46,7 @@ export default function Home() {
 
             {/* Bottom images */}
             <div>
-              <div className="absolute -bottom-5 left-0 z-10 w-[155px]  md:-bottom-12 lg:-bottom-16 md:w-[280px] lg:w-[330px] xl:w-[370px]">
+              <div className="absolute -bottom-5 left-0 z-10 w-[155px]  md:-bottom-12 lg:-bottom-16 md:w-[270px] lg:w-[320px] xl:w-[370px]">
                 <Image
                   src="/images/DDCC.webp"
                   alt="Bremen statue"
@@ -57,7 +57,7 @@ export default function Home() {
                 />
               </div>
 
-              <div className="absolute bottom-0 left-1/2 hidden w-[120px] -translate-x-1/2 sm:block sm:w-[180px] md:w-[250px]  lg:w-[330px] xl:w-[480px]">
+              <div className="absolute bottom-0 left-1/2 hidden w-[120px] -translate-x-1/2 sm:block sm:w-[180px] md:w-[250px]  lg:w-[320px] xl:w-[480px]">
                 <Image
                   src="/images/city1.png"
                   alt="Bremen skyline"
@@ -68,7 +68,7 @@ export default function Home() {
                 />
               </div>
 
-              <div className="absolute -bottom-6 right-0 z-10 w-[145px] md:-bottom-16  md:w-[270px] lg:w-[320px] xl:-bottom-28 xl:w-[360px]">
+              <div className="absolute -bottom-6 right-0 z-10 w-[145px] md:-bottom-16  md:w-[260px] lg:w-[310px] xl:-bottom-28 xl:w-[380px]">
                 <Image
                   src="/images/kirche.webp"
                   alt="Bremen church"

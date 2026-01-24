@@ -11,12 +11,14 @@ export default function AdminDashboard() {
   const unfilteredMarkersData = fakeData;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8 md:space-y-10">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-semibold">Dashboard</h1>
+        <h1 className="font-semibold text-xl md:text-2xl lg:text-3xl">
+          Dashboard
+        </h1>
         <LogoutBtn />
       </div>
-      <div className="flex gap-6">
+      <div className="flex flex-col gap-6 md:flex-row">
         <UsersChart />
         <MarkersChart />
       </div>

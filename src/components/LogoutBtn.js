@@ -16,9 +16,9 @@ const LogoutBtn = () => {
   return (
     <button
       onClick={logoutHandler}
-      className="flex items-center gap-2 bg-[#FF4B4B] text-white py-2 px-5 rounded-xl cursor-pointer hover:border hover:border-[#FF4B4B] hover:bg-transparent hover:text-black"
+      className="flex items-center gap-2 bg-[#FF4B4B] text-white py-1.5 px-3 rounded-xl cursor-pointer hover:border hover:border-[#FF4B4B] hover:bg-transparent text-sm md:text-base hover:text-black md:py-2 md:px-5"
     >
-      <IoMdLogOut className="text-xl" /> Signout
+      <IoMdLogOut className="text-lg md:text-xl" /> Signout
     </button>
   );
 };

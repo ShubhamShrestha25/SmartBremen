@@ -19,8 +19,8 @@ export default function Dashboard() {
   if (role === null) return null;
 
   return (
-    <div className="flex justify-center py-10">
-      <div className="mainContainer">
+    <div className="flex justify-center py-8 md:py-10">
+      <div className="mainContainer overflow-hidden">
         {role === "ADMIN" ? <AdminDashboard /> : <UserDashboard />}
       </div>
     </div>

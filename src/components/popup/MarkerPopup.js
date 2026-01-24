@@ -69,19 +69,22 @@ export default function MarkerPopup({ show, onClose, marker }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-auto">
-      <div className="bg-white p-6 rounded-xl w-96 relative">
+      <div className="bg-white p-6 rounded-xl w-85 relative sm:w-96">
         <button
           onClick={onClose}
-          className="absolute top-2 right-4 text-[#FF4B4B] cursor-pointer"
+          className="absolute top-2 right-4 text-[#FF4B4B] cursor-pointer text-xl"
         >
           ✕
         </button>
 
-        <h2 className="text-xl font-bold mb-4">
+        <h2 className="font-bold mb-4 md:text-xl">
           {marker ? "Edit Marker" : "Add Marker"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-3 text-sm md:text-base"
+        >
           <input
             type="text"
             name="title"

@@ -21,8 +21,8 @@ const data = [
 
 export default function MarkersChart() {
   return (
-    <div className="bg-white p-4 rounded-lg shadow w-full">
-      <h2 className="text-lg font-semibold mb-4">Markers Monthly</h2>
+    <div className=" w-full">
+      <h2 className="text-sm font-semibold mb-4 md:text-lg">Markers Monthly</h2>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />

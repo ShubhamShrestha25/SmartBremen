@@ -21,10 +21,10 @@ const data = [
 
 export default function UsersMonthlyChart() {
   return (
-    <div className="bg-white p-4 rounded-lg shadow w-full">
-      <h2 className="text-lg font-semibold mb-4">Users Monthly</h2>
+    <div className="w-full">
+      <h2 className="text-sm font-semibold mb-4 md:text-lg">Users Monthly</h2>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
+        <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
           <YAxis />
