@@ -19,17 +19,17 @@ export default function Home() {
 
         <div className="relative flex h-full w-full justify-center">
           <main className="mainContainer relative">
-            <div className="relative z-20 mt-10 flex flex-col items-center lg:gap-5 lg:mt-20">
+            <div className="relative z-20 mt-10 flex flex-col items-center lg:gap-5 xl:mt-14 2xl:mt-20">
               <div className="text-center">
-                <h1 className="mb-1 text-2xl font-medium text-[#FF4B4B] lg:text-3xl xl:text-[44px]">
+                <h1 className="mb-1 text-2xl font-medium text-[#FF4B4B] lg:text-3xl xl:text-4xl 2xl:text-[44px]">
                   Discover the Hidden City
                 </h1>
 
-                <p className="text-[#45414F] lg:text-xl xl:text-[24px]">
+                <p className="text-[#45414F] lg:text-xl xl:text-[22px] 2xl:text-[24px]">
                   Stories, Spaces, and Informal Life in Bremen
                 </p>
 
-                <p className="mt-8 text-sm text-[#45414F] sm:w-[550px] lg:w-[700px] lg:text-lg xl:w-[828px] xl:text-[20px]">
+                <p className="mt-8 text-sm text-[#45414F] sm:w-[550px] lg:w-[700px] lg:text-lg xl:w-[828px] 2xl:text-[20px]">
                   Between official streets and marked paths, there are stories
                   created by people, improvised gardens, secret shortcuts,
                   micro-hangout spots, and traces of everyday creativity. Smart
@@ -38,7 +38,7 @@ export default function Home() {
               </div>
 
               <Link href="/map">
-                <button className="mt-9 h-12 w-45 cursor-pointer rounded-[20px] bg-[#6BEE32] text-sm font-semibold hover:border-2 hover:border-[#6BEE32] hover:bg-transparent lg:h-14 lg:w-[244px] lg:text-base">
+                <button className="mt-8 h-12 w-45 cursor-pointer rounded-[20px] bg-[#6BEE32] text-sm font-semibold hover:border-2 hover:border-[#6BEE32] hover:bg-transparent lg:h-14 lg:w-[244px] lg:text-base xl:mt-5 2xl:mt-10">
                   START EXPLORING
                 </button>
               </Link>
@@ -46,7 +46,7 @@ export default function Home() {
 
             {/* Bottom images */}
             <div>
-              <div className="absolute -bottom-5 left-0 z-10 w-[155px]  md:-bottom-12 lg:-bottom-16 md:w-[270px] lg:w-[320px] xl:w-[370px]">
+              <div className="absolute -bottom-5 left-0 z-10 w-[155px] md:-bottom-12 lg:-bottom-16 md:w-[270px] lg:w-[300px] 2xl:w-[370px]">
                 <Image
                   src="/images/DDCC.webp"
                   alt="Bremen statue"
@@ -68,7 +68,7 @@ export default function Home() {
                 />
               </div>
 
-              <div className="absolute -bottom-6 right-0 z-10 w-[145px] md:-bottom-16  md:w-[260px] lg:w-[310px] xl:-bottom-28 xl:w-[380px]">
+              <div className="absolute -bottom-6 right-0 z-10 w-[145px] md:-bottom-16  md:w-[260px] lg:w-[320px] xl:-bottom-28 2xl:w-[380px]">
                 <Image
                   src="/images/kirche.webp"
                   alt="Bremen church"
