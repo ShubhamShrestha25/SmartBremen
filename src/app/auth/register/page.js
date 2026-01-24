@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function RegisterPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -47,6 +48,19 @@ export default function RegisterPage() {
           <h1 className="text-lg font-semibold mb-6 uppercase text-center lg:text-2xl">
             REGISTER
           </h1>
+
+          <div className="mb-4">
+            <label className="block text-xs font-medium mb-1 lg:text-sm">
+              Full Name
+            </label>
+            <input
+              type="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
+              required
+            />
+          </div>
 
           <div className="mb-4">
             <label className="block text-xs font-medium mb-1 lg:text-sm">
