@@ -17,8 +17,8 @@ export default function RegisterPage() {
       alert("Passwords do not match");
       return;
     }
-
-    console.log({ email, password });
+    // handle register then redirect user to dashboard
+    router.push("/auth/dashboard");
   };
 
   return (

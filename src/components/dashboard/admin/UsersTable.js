@@ -49,14 +49,12 @@ const Users = () => {
                 <td className="px-4 py-3 text-sm font-medium text-gray-800 whitespace-nowrap">
                   {user.name}
                 </td>
-
                 <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
                   {user.email}
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
                   {user.createdAt}
                 </td>
-
                 <td className="px-4 py-3 text-center">
                   <div className="flex justify-center gap-2">
                     <button className="rounded-md bg-[#FF4B4B] p-2.5 text-white">
@@ -72,6 +70,7 @@ const Users = () => {
       <p className="mt-3 text-center sm:hidden">
         Swipe left or right to view the table 👉📱
       </p>
+      {/* Pagination */}
       <div className="space-x-2 my-4 text-center">
         <button className="px-3 py-1 text-sm border rounded border-[#6BEE32]">
           1

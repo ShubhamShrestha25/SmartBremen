@@ -20,7 +20,7 @@ export default function Map() {
 
   const [selectedMarker, setSelectedMarker] = useState(null);
 
-  // ✅ filter state lives here
+  // filter state according to selected category
   const [activeCategory, setActiveCategory] = useState(null);
 
   const mapContainer = useRef(null);
@@ -67,7 +67,7 @@ export default function Map() {
       map.current = null;
       setMapReady(false);
     };
-  }, [isClient]);
+  }, [isClient, bremen]);
 
   // ✅ compute filtered dataset
   const filteredData = useMemo(() => {

@@ -8,6 +8,8 @@ import MarkersChart from "./charts/MarkersChart";
 import { fakeData } from "@/data/fakeData";
 
 export default function AdminDashboard() {
+
+  // Admin has access to all data
   const unfilteredMarkersData = fakeData;
 
   return (
@@ -18,11 +20,12 @@ export default function AdminDashboard() {
         </h1>
         <LogoutBtn />
       </div>
+
       <div className="flex flex-col gap-6 md:flex-row">
         <UsersChart />
         <MarkersChart />
       </div>
-
+      
       <div className="space-y-10">
         <UsersTable />
         <MarkersTable markersData={unfilteredMarkersData} />

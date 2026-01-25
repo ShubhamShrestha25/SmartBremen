@@ -14,6 +14,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Video from "yet-another-react-lightbox/plugins/video";
 
+// Check if the URL is an image or a video
 const getMediaType = (url = "") => {
   if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return "video";
   if (/\.(png|jpe?g|webp|gif|svg)$/i.test(url)) return "image";
@@ -28,6 +29,7 @@ const Markers = ({ markersData }) => {
 
   const { role } = useAuthStore();
 
+  // Used by the lightbox to display images or videos in fullscreen
   const slides = useMemo(() => {
     return (selectedMarker?.images ?? [])
       .map((img) => img?.url)

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 export default function MarkerPopup({ show, onClose, marker }) {
   const [formData, setFormData] = useState(null);
 
+  //setting form for new marker or selected marker
   useEffect(() => {
     const initializeForm = () => {
       if (marker) {
@@ -55,7 +56,7 @@ export default function MarkerPopup({ show, onClose, marker }) {
 
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
-    // keeping your current behavior (store names). If you want actual File objects, tell me.
+    // storing file name.
     setFormData((prev) => ({ ...prev, images: files.map((f) => f.name) }));
   };
 
@@ -122,7 +123,6 @@ export default function MarkerPopup({ show, onClose, marker }) {
             ))}
           </select>
 
-          {/* Author */}
           <div className="flex gap-2">
             <input
               type="text"
@@ -170,6 +170,7 @@ export default function MarkerPopup({ show, onClose, marker }) {
               </label>
             )}
 
+            {/* Display selected images by filename */}
             {formData.images.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {formData.images.map((img, idx) => (
@@ -178,7 +179,7 @@ export default function MarkerPopup({ show, onClose, marker }) {
                     className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded"
                   >
                     <span className="text-sm">
-                      {typeof img === "string" ? img : img?.url}
+                      {typeof img === "string" ? img : img?.filename}
                     </span>
 
                     <button

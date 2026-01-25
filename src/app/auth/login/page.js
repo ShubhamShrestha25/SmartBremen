@@ -16,11 +16,13 @@ export default function LoginPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+ // Temporary role check using a hardcoded admin email
     const roleCheck = email === "admin123@gmail.com" ? "ADMIN" : "USER";
 
     setUserId("user-1"); // just for test manually setting using id
     setRole(roleCheck);
 
+    // handle login then redirect user to dashboard
     router.push("/auth/dashboard");
   };
 
