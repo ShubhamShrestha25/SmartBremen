@@ -67,7 +67,7 @@ export default function Map() {
       map.current = null;
       setMapReady(false);
     };
-  }, [isClient, bremen]);
+  }, [isClient]);
 
   // ✅ compute filtered dataset
   const filteredData = useMemo(() => {
