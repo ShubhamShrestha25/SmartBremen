@@ -1,55 +1,55 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { IoCheckmarkDone } from "react-icons/io5";
 
-// Default fallback categories (used while loading from Firestore)
-const defaultCategories = [
-  { id: "1", name: "Social & Cultural Practices", color: "#F59B2D" },
-  { id: "2", name: "Informal Economies & Exchanges", color: "#4CAF50" },
-  { id: "3", name: "Material & Spatial Informality", color: "#3A7BD5" },
-  { id: "4", name: "Landscape & Environmental Informality", color: "#6C63B8" },
-  { id: "5", name: "Other", color: "#4A4A4A" },
-];
+const MapFilter = ({ categories, activeCategory, onCategorySelect }) => {
+  const [hoverColor, setHoverColor] = useState(null);
 
-const MapFilter = ({ categories = [], activeCategory, onCategorySelect }) => {
-  const [activeColor, setActiveColor] = useState(null);
+  const selectedColor = useMemo(() => {
+    if (!activeCategory) return null;
+    const cat = categories.find((c) => c.id === activeCategory);
+    return cat?.color ?? null;
+  }, [activeCategory, categories]);
 
-  // Use provided categories or fallback to defaults
-  const displayCategories = categories.length > 0 ? categories : defaultCategories;
+  const barColor = selectedColor || hoverColor || "#6BEE32";
 
   return (
     <div className="flex items-center gap-2.5 absolute z-30 right-0 bottom-1/2">
       <div className="flex flex-col gap-1 items-end">
-        {displayCategories.map((cat) => {
+        {categories.map((cat) => {
           const isOpen = activeCategory === cat.id;
 
           return (
             <button
               key={cat.id}
               type="button"
-              className={`group flex items-center h-6 rounded-3xl overflow-hidden cursor-pointer transition-all duration-200 w-6 text-white hover:h-7 hover:pr-1 hover:w-fit ${isOpen ? "isOpen h-7 pr-1 w-fit" : ""}`}
-              style={{
-                backgroundColor: cat.color || "#4A4A4A",
-              }}
-              onClick={() => onCategorySelect?.(cat.id)}
-              onMouseEnter={() => setActiveColor(cat.color)}
-              onMouseLeave={() => setActiveColor(null)}
+              className={`group flex items-center h-6 rounded-3xl overflow-hidden cursor-pointer transition-all duration-200 w-6 text-white hover:h-7 hover:pr-1 hover:w-fit ${
+                isOpen ? "isOpen h-7 pr-1 w-fit" : ""
+              }`}
+              style={{ backgroundColor: cat.color || "#6BEE32" }}
+              onClick={() => onCategorySelect(cat.id)}
+              onMouseEnter={() => setHoverColor(cat.color || "#6BEE32")}
+              onMouseLeave={() => setHoverColor(null)}
               aria-pressed={isOpen}
-              aria-label={cat.name}
+              aria-label={cat.title || cat.name || "Category"}
             >
               <span className="hidden group-hover:block group-[.isOpen]:block text-xs whitespace-nowrap px-2">
                 {isOpen ? (
                   <IoCheckmarkDone className="text-lg lg:text-xl" />
                 ) : (
-                  cat.name
+                  cat.title || cat.name
                 )}
               </span>
 
-              {/* Category icon - use color circle if no image */}
-              <div
-                className="w-6 h-6 rounded-full flex-shrink-0"
-                style={{ backgroundColor: cat.color || "#4A4A4A" }}
-              />
+              {!!cat.img && (
+                <Image
+                  src={cat.img}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="w-6 h-6"
+                />
+              )}
             </button>
           );
         })}
