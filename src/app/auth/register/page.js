@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function RegisterPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -85,7 +86,7 @@ export default function RegisterPage() {
         className="object-cover relative z-10"
       />
 
-      <div className="flex flex-col items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20 lg:flex-row-reverse">
+      <div className="flex flex-col items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20 my-5 lg:flex-row-reverse">
         <div className="w-[250px] lg:w-[350px]">
           <Image
             src="/images/windmill.gif"
@@ -101,6 +102,19 @@ export default function RegisterPage() {
           <h1 className="text-lg font-semibold mb-6 uppercase text-center lg:text-2xl">
             REGISTER
           </h1>
+
+          <div className="mb-4">
+            <label className="block text-xs font-medium mb-1 lg:text-sm">
+              Full Name
+            </label>
+            <input
+              type="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring"
+              required
+            />
+          </div>
 
           <div className="mb-4">
             <label className="block text-xs font-medium mb-1 lg:text-sm">

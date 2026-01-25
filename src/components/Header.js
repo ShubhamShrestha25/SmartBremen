@@ -9,50 +9,58 @@ const Header = () => {
   const pathname = usePathname();
   const { role } = useAuthStore();
 
+  const isAuthActive =
+    pathname === "/auth/login" || pathname === "/auth/register";
+
   return (
-    <nav className="sticky top-0 z-50 flex justify-center items-center h-15 bg-white lg:h-20">
-      <div className="mainContainer flex justify-between items-center">
+    <nav className="sticky top-0 z-50 flex h-[60px] items-center justify-center bg-white lg:h-[80px]">
+      <div className="mainContainer flex items-center justify-between">
         <Link href="/" className="w-[120px] lg:w-[155px]">
           <Image
             src="/images/logo1.png"
-            alt=""
+            alt="Smart Bremen"
             width={149}
             height={60}
-            className="w-full h-auto"
+            className="h-auto w-full"
+            priority
           />
         </Link>
-        <div className="flex items-center  gap-5 lg:gap-20">
-          <div>
-            <ul className="uppercase flex gap-5 text-[#45414F] text-xs lg:text-base lg:gap-20">
+
+        <div className="flex items-center gap-5 lg:gap-20">
+          <ul className="flex gap-5 text-xs uppercase text-[#45414F] lg:gap-20 lg:text-base">
+            <li>
               <Link
                 className={pathname === "/about" ? "text-[#FF4B4B]" : ""}
                 href="/about"
               >
-                <li>about</li>
+                about
               </Link>
+            </li>
+
+            <li>
               <Link
                 className={pathname === "/help" ? "text-[#FF4B4B]" : ""}
                 href="/help"
               >
-                <li>help</li>
+                help
               </Link>
-              {!role && (
+            </li>
+
+            {!role && (
+              <li>
                 <Link
-                  className={
-                    pathname === "/auth/login" || "/auth/register"
-                      ? "text-[#FF4B4B]"
-                      : ""
-                  }
+                  className={isAuthActive ? "text-[#FF4B4B]" : ""}
                   href="/auth/login"
                 >
-                  <li>login</li>
+                  login
                 </Link>
-              )}
-            </ul>
-          </div>
+              </li>
+            )}
+          </ul>
+
           {role && (
-            <Link href="/auth/dashboard">
-              <div className="h-6 w-6 rounded-full flex items-center justify-center font-bold border border-[#FF4B4B] text-xs lg:text-sm lg:h-8 lg:w-8">
+            <Link href="/auth/dashboard" aria-label="Open dashboard">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full border border-[#FF4B4B] text-xs font-bold lg:h-8 lg:w-8 lg:text-sm">
                 JD
               </div>
             </Link>

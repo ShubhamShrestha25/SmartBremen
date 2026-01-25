@@ -40,16 +40,18 @@ const Users = ({ usersData = [], onRefresh }) => {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-800 mb-6">Users</h1>
+      <h1 className="text-lg font-semibold text-gray-800 mb-5 lg:text-2xl">
+        Users
+      </h1>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto custom-scrollbar">
         <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
                 Name
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
                 Email
               </th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
@@ -136,6 +138,23 @@ const Users = ({ usersData = [], onRefresh }) => {
             )}
           </tbody>
         </table>
+      </div>
+      <p className="mt-3 text-center sm:hidden">
+        Swipe left or right to view the table 👉📱
+      </p>
+      {/* Pagination */}
+      <div className="space-x-2 my-4 text-center">
+        <button className="px-3 py-1 text-sm border rounded border-[#6BEE32]">
+          1
+        </button>
+
+        <button className="px-3 py-1 text-sm border rounded border-gray-300 hover:bg-gray-100">
+          2
+        </button>
+
+        <button className="px-3 py-1 text-sm border rounded border-gray-300 hover:bg-gray-100">
+          3
+        </button>
       </div>
     </div>
   );

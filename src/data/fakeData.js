@@ -1,6 +1,7 @@
 export const fakeData = [
   {
     id: 123,
+    userId: "user-1",
     title: "Street Gathering at Marktplatz",
     description:
       "A small informal gathering observed at Marktplatz, where people used the public space for social interaction beyond its formal design.",
@@ -46,6 +47,7 @@ export const fakeData = [
 
   {
     id: 333,
+    userId: "user-1",
     title: "Informal Trade Along Schlachte",
     description:
       "Informal economic activity taking place along the Schlachte promenade, involving small-scale exchanges in a public waterfront area.",
@@ -91,6 +93,7 @@ export const fakeData = [
 
   {
     id: 223,
+    userId: "user-2",
     title: "Temporary Structures in Bürgerpark",
     description:
       "Temporary and improvised structures observed in Bürgerpark, reflecting flexible and informal use of park space.",
@@ -136,6 +139,7 @@ export const fakeData = [
 
   {
     id: 556,
+    userId: "user-1",
     title: "Waterfront Adaptations in Überseestadt",
     description:
       "Adaptations and informal landscape use identified in the Überseestadt area, shaped by proximity to water and ongoing development.",
@@ -165,6 +169,12 @@ export const fakeData = [
     },
     images: [
       {
+        imageId: "vid-1",
+        filename: "ueberseestadt_001.mp4",
+        timestamp: "2026-01-24T16:20:00Z",
+        url: "/videos/IMG_4426.mov",
+      },
+      {
         imageId: "img-7",
         filename: "ueberseestadt_001.jpg",
         timestamp: "2026-01-24T16:20:00Z",
@@ -181,6 +191,7 @@ export const fakeData = [
 
   {
     id: 888,
+    userId: "user-2",
     title: "Unclassified Activity Near Universum Bremen",
     description:
       "An observed activity near Universum Bremen that does not clearly fit into predefined categories but indicates informal use of space.",

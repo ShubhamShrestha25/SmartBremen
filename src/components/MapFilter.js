@@ -57,7 +57,7 @@ const MapFilter = ({ categories = [], activeCategory, onCategorySelect }) => {
 
       <div
         className="w-2 h-58 rounded-l-[5px] transition-colors duration-200 lg:w-2.5"
-        style={{ backgroundColor: activeColor ? activeColor : "#6BEE32" }}
+        style={{ backgroundColor: barColor }}
       />
     </div>
   );

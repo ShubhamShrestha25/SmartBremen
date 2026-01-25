@@ -67,7 +67,7 @@ export default function LoginPage() {
         sizes="100vw"
         className="object-cover relative z-10"
       />
-      <div className="flex flex-col items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20 lg:flex-row">
+      <div className="flex flex-col items-center gap-5 bg-white rounded-2xl shadow-2xl px-6 py-10 relative z-20 my-5 lg:flex-row">
         <div className="w-[250px] lg:w-[350px]">
           <Image
             src="/images/windmill.gif"
@@ -80,7 +80,7 @@ export default function LoginPage() {
         </div>
         <div className="w-[80%] rounded-xl bg-gray-300 h-px mr-3 lg:w-px lg:h-80" />
         <form onSubmit={handleSubmit} className="w-xs">
-          <h1 className="text-lg font-semibold mb-6 uppercase text-center lg:text-2xl">
+          <h1 className="text-lg font-semibold mb-6 uppercase text-center lg:text-xl xl:text-2xl">
             Login
           </h1>
 

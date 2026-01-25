@@ -22,14 +22,23 @@ export default function Map() {
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [selectedMarker, setSelectedMarker] = useState(null);
+
+  // filter state according to selected category
+  const [activeCategory, setActiveCategory] = useState(null);
+
   const mapContainer = useRef(null);
   const map = useRef(null);
+
   const markersRef = useRef([]);
 
   const bremen = { lng: 8.8017, lat: 53.0793 };
   const zoom = 14;
 
-  maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAP_ID;
+  maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAP_ID || "";
 
   // Fetch data from Firestore
   useEffect(() => {
@@ -75,13 +84,18 @@ export default function Map() {
     m.on("load", () => setMapReady(true));
 
     return () => {
-      markersRef.current.forEach((mk) => mk.remove());
+      // remove markers + listeners
+      markersRef.current.forEach(({ marker, el, onClick }) => {
+        el.removeEventListener("click", onClick);
+        marker.remove();
+      });
       markersRef.current = [];
+
       m.remove();
       map.current = null;
       setMapReady(false);
     };
-  }, [isClient, zoom]);
+  }, [isClient]);
 
   // Filter markers by category
   const filteredMarkers = activeCategory
@@ -92,8 +106,11 @@ export default function Map() {
   useEffect(() => {
     if (!mapReady || !map.current || isLoading) return;
 
-    // clean old markers
-    markersRef.current.forEach((mk) => mk.remove());
+    // clean old markers + listeners
+    markersRef.current.forEach(({ marker, el, onClick }) => {
+      el.removeEventListener("click", onClick);
+      marker.remove();
+    });
     markersRef.current = [];
 
     const newMarkers = filteredMarkers.map((data) => {
@@ -135,15 +152,18 @@ export default function Map() {
         setIsOpen(true);
       });
 
-      return mk;
+      el.addEventListener("click", onClick);
+
+      return { marker, el, onClick, data };
     });
 
-    markersRef.current = newMarkers;
+    markersRef.current = entries;
 
-    // cleanup listeners + markers on rerun/unmount
     return () => {
-      newMarkers.forEach((mk) => mk.remove());
-      markersRef.current = [];
+      entries.forEach(({ marker, el, onClick }) => {
+        el.removeEventListener("click", onClick);
+        marker.remove();
+      });
     };
   }, [mapReady, filteredMarkers, categories, isLoading]);
 
@@ -153,6 +173,7 @@ export default function Map() {
   }, []);
 
   if (!isClient) return null;
+
 
   return (
     <div className="relative w-full h-screen">

@@ -5,9 +5,8 @@ import { useState, useMemo } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { RxCross1 } from "react-icons/rx";
 import { FaRegTrashAlt } from "react-icons/fa";
-import "yet-another-react-lightbox/styles.css";
-import Lightbox from "yet-another-react-lightbox";
 import { MdAddCircle, MdEdit } from "react-icons/md";
+
 import MarkerPopup from "@/components/popup/MarkerPopup";
 import useAuthStore from "@/store/useAuthStore";
 import { updateImageStatus, deleteImage } from "@/lib/firestore";
@@ -21,10 +20,22 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
 
   const { role, userId } = useAuthStore();
 
+  // Used by the lightbox to display images or videos in fullscreen
   const slides = useMemo(() => {
     return (selectedMarker?.images ?? [])
-      .filter((img) => img?.url)
-      .map((img) => ({ src: img.url }));
+      .map((img) => img?.url)
+      .filter(Boolean)
+      .map((url) => {
+        const type = getMediaType(url);
+
+        if (type === "video") {
+          return {
+            type: "video",
+            sources: [{ src: url }],
+          };
+        }
+        return { src: url };
+      });
   }, [selectedMarker]);
 
   const handleDeleteMarker = async (markerId) => {
@@ -83,38 +94,40 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800 ">Markers</h1>
+        <h1 className="text-lg font-semibold text-gray-800 lg:text-2xl">
+          Markers
+        </h1>
         <button onClick={() => setShowModal(true)}>
           <MdAddCircle className="text-3xl" />
         </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+      <div className="overflow-x-auto custom-scrollbar">
+        <table className="min-w-full border border-gray-200 rounded-lg">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
                 Image
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
                 Title
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
                 Author
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
                 Location
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
-                category
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                Category
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
                 Description
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
                 Status
               </th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 md:text-sm">
                 Actions
               </th>
             </tr>
@@ -129,7 +142,7 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
                       setIsOpen(true);
                       setSelectedMarker(marker);
                     }}
-                    className="relative w-20 h-15 border border-[#6BEE32] rounded-xl flex justify-center items-center cursor-pointer"
+                    className="relative w-18 h-14 border border-[#6BEE32] rounded-xl flex justify-center items-center cursor-pointer md:w-20 md:h-15"
                   >
                     <Image
                       src={marker?.images?.[0]?.url || marker?._original?.thumbnailUrl || "/images/marker-popup-default.png"}
@@ -171,7 +184,7 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
 
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold 
                          ${
                            marker.status?.toLowerCase() === "pending"
                              ? "bg-yellow-100 text-yellow-800"
@@ -234,6 +247,22 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
           </tbody>
         </table>
       </div>
+      <p className="mt-3 text-center 2xl:hidden">
+        Swipe left or right to view the table 👉📱
+      </p>
+      <div className="space-x-2 my-4 text-center">
+        <button className="px-3 py-1 text-sm border rounded border-[#6BEE32]">
+          1
+        </button>
+
+        <button className="px-3 py-1 text-sm border rounded border-gray-300 hover:bg-gray-100">
+          2
+        </button>
+
+        <button className="px-3 py-1 text-sm border rounded border-gray-300 hover:bg-gray-100">
+          3
+        </button>
+      </div>
       <MarkerPopup
         show={showModal}
         onClose={() => {
@@ -246,6 +275,7 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
         open={isOpen}
         close={() => setIsOpen(false)}
         slides={slides}
+        plugins={[Video]}
         index={current}
         view={{ closeOnBackdropClick: true }}
         on={{

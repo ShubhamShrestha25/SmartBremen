@@ -4,16 +4,21 @@ import { useEffect, useState } from "react";
 export default function MarkerPopup({ show, onClose, marker }) {
   const [formData, setFormData] = useState(null);
 
+  //setting form for new marker or selected marker
   useEffect(() => {
     const initializeForm = () => {
       if (marker) {
         setFormData({
           title: marker.title || "",
-          location: marker.location.name || "",
-          category: marker.category.name || "",
+          location: marker.location?.name || "",
+          category: marker.category?.name || "",
           description: marker.description || "",
           images: marker.images || [],
           status: marker.status || "PENDING",
+          author: {
+            firstName: marker.author?.firstName || "",
+            lastName: marker.author?.lastName || "",
+          },
         });
       } else {
         setFormData({
@@ -23,6 +28,10 @@ export default function MarkerPopup({ show, onClose, marker }) {
           description: "",
           images: [],
           status: "PENDING",
+          author: {
+            firstName: "",
+            lastName: "",
+          },
         });
       }
     };
@@ -31,36 +40,52 @@ export default function MarkerPopup({ show, onClose, marker }) {
   }, [marker]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleAuthorChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      author: {
+        ...prev.author,
+        [name]: value,
+      },
+    }));
   };
 
   const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
-    setFormData({ ...formData, images: files.map((f) => f.name) });
+    // storing file name.
+    setFormData((prev) => ({ ...prev, images: files.map((f) => f.name) }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    //// either add new marker or update existing marker
+    // either add new marker or update existing marker
     onClose();
   };
 
-  if (!show) return null;
+  if (!show || !formData) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-auto">
-      <div className="bg-white p-6 rounded-xl w-96 relative">
+      <div className="bg-white p-6 rounded-xl w-85 relative sm:w-96">
         <button
           onClick={onClose}
-          className="absolute top-2 right-4 text-[#FF4B4B] cursor-pointer"
+          className="absolute top-2 right-4 text-[#FF4B4B] cursor-pointer text-xl"
         >
           ✕
         </button>
-        <h2 className="text-xl font-bold mb-4">
+
+        <h2 className="font-bold mb-4 md:text-xl">
           {marker ? "Edit Marker" : "Add Marker"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-3 text-sm md:text-base"
+        >
           <input
             type="text"
             name="title"
@@ -98,6 +123,28 @@ export default function MarkerPopup({ show, onClose, marker }) {
             ))}
           </select>
 
+          <div className="flex gap-2">
+            <input
+              type="text"
+              name="firstName"
+              placeholder="Author First Name"
+              value={formData.author.firstName}
+              onChange={handleAuthorChange}
+              className="w-1/2 border px-3 py-2 rounded"
+              required
+            />
+
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Author Last Name"
+              value={formData.author.lastName}
+              onChange={handleAuthorChange}
+              className="w-1/2 border px-3 py-2 rounded"
+              required
+            />
+          </div>
+
           <textarea
             name="description"
             placeholder="Description"
@@ -123,6 +170,7 @@ export default function MarkerPopup({ show, onClose, marker }) {
               </label>
             )}
 
+            {/* Display selected images by filename */}
             {formData.images.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {formData.images.map((img, idx) => (
@@ -130,15 +178,18 @@ export default function MarkerPopup({ show, onClose, marker }) {
                     key={idx}
                     className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded"
                   >
-                    <span className="text-sm">{img.url}</span>
+                    <span className="text-sm">
+                      {typeof img === "string" ? img : img?.filename}
+                    </span>
+
                     <button
                       type="button"
                       className="text-red-500 font-bold hover:text-red-700"
                       onClick={() =>
-                        setFormData({
-                          ...formData,
-                          images: formData.images.filter((_, i) => i !== idx),
-                        })
+                        setFormData((prev) => ({
+                          ...prev,
+                          images: prev.images.filter((_, i) => i !== idx),
+                        }))
                       }
                     >
                       ×

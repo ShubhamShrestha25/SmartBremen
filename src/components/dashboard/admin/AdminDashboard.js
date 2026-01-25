@@ -43,9 +43,11 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8 md:space-y-10">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-semibold">Dashboard</h1>
+        <h1 className="font-semibold text-xl md:text-2xl lg:text-3xl">
+          Dashboard
+        </h1>
         <LogoutBtn />
       </div>
       

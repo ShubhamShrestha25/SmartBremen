@@ -14,17 +14,9 @@ const PopupSkeleton = () => {
         <div className="h-3 w-full bg-gray-400 rounded" />
         <div className="h-3 w-full bg-gray-400 rounded" />
         <div className="h-3 w-5/6 bg-gray-400 rounded" />
+        <div className="h-3 w-5/6 bg-gray-400 rounded" />
         <div className="h-3 w-4/6 bg-gray-400 rounded" />
-      </div>
-
-      <div className="my-4 animate-pulse">
-        <div className="h-4 w-24 bg-gray-400 rounded mb-3" />
-        <ul className="space-y-2">
-          <li className="h-3 w-32 bg-gray-400 rounded" />
-          <li className="h-3 w-28 bg-gray-400 rounded" />
-          <li className="h-3 w-36 bg-gray-400 rounded" />
-          <li className="h-3 w-24 bg-gray-400 rounded" />
-        </ul>
+        <div className="h-3 w-4/6 bg-gray-400 rounded" />
       </div>
     </div>
   );
