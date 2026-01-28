@@ -41,15 +41,13 @@ const MapFilter = ({ categories, activeCategory, onCategorySelect }) => {
                 )}
               </span>
 
-              {!!cat.img && (
-                <Image
-                  src={cat.img}
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="w-6 h-6"
-                />
-              )}
+              <Image
+                src={cat.iconUrl}
+                alt=""
+                width={20}
+                height={20}
+                className="w-6 h-6 rounded-full"
+              />
             </button>
           );
         })}

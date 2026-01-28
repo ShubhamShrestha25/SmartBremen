@@ -118,26 +118,16 @@ export default function Map() {
       // custom marker element
       const el = document.createElement("div");
 
-      if (data.markerUrl) {
-        const img = document.createElement("img");
-        img.src = data.markerUrl;
-        img.alt = data.title || "Marker";
-        img.style.width = "40px";
-        img.style.height = "40px";
-        img.style.borderRadius = "50%";
-        img.style.objectFit = "cover";
-        img.style.border = `3px solid ${cat?.color || "#6BEE32"}`;
-        img.style.cursor = "pointer";
-        el.appendChild(img);
-      } else {
-        el.style.width = "30px";
-        el.style.height = "30px";
-        el.style.borderRadius = "50%";
-        el.style.backgroundColor = (cat && cat.color) || "#6BEE32";
-        el.style.border = "3px solid white";
-        el.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
-        el.style.cursor = "pointer";
-      }
+      const img = document.createElement("img");
+      img.src = cat.iconUrl;
+      img.alt = data.title || "Marker";
+      el.style.width = "32px";
+      el.style.height = "32px";
+      img.style.borderRadius = "50%";
+      img.style.objectFit = "cover";
+      img.style.border = `2px solid white`;
+      el.style.cursor = "pointer";
+      el.appendChild(img);
 
       const marker = new maptilersdk.Marker({ element: el })
         .setLngLat([data.lng, data.lat])
