@@ -12,17 +12,32 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 export default function MarkersChart({ markersData = [] }) {
   // Aggregate markers by month
   const chartData = useMemo(() => {
     const currentYear = new Date().getFullYear();
     const monthCounts = {};
-    
+
     // Initialize all months to 0
-    months.forEach((m) => { monthCounts[m] = 0; });
-    
+    months.forEach((m) => {
+      monthCounts[m] = 0;
+    });
+
     // Count markers per month
     markersData.forEach((marker) => {
       if (marker.createdAt) {
@@ -33,7 +48,7 @@ export default function MarkersChart({ markersData = [] }) {
         }
       }
     });
-    
+
     // Convert to array format for chart
     return months.slice(0, new Date().getMonth() + 1).map((month) => ({
       month,
@@ -52,11 +67,17 @@ export default function MarkersChart({ markersData = [] }) {
   }, [markersData]);
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow w-full">
-      <h2 className="text-lg font-semibold mb-2">Markers Monthly ({markersData.length} total)</h2>
-      <div className="flex gap-4 mb-2 text-xs">
-        <span className="text-green-600">✓ {statusCounts.approved} approved</span>
-        <span className="text-yellow-600">⏳ {statusCounts.pending} pending</span>
+    <div className="w-full">
+      <h2 className="text-sm font-semibold mb-2 md:mb-4 md:text-lg">
+        Markers Monthly ({markersData.length} total)
+      </h2>
+      <div className="flex gap-4 mb-2 text-[10px] md:text-xs">
+        <span className="text-green-600">
+          ✓ {statusCounts.approved} approved
+        </span>
+        <span className="text-yellow-600">
+          ⏳ {statusCounts.pending} pending
+        </span>
         <span className="text-red-600">✗ {statusCounts.rejected} rejected</span>
       </div>
       <ResponsiveContainer width="100%" height={280}>

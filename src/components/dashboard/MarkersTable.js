@@ -102,8 +102,6 @@ const Markers = ({ markersData, onRefresh }) => {
     }
   };
 
-  console.log(markersData);
-
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -176,23 +174,23 @@ const Markers = ({ markersData, onRefresh }) => {
                   </div>
                 </td>
 
-                <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                <td className="px-4 py-3 text-xs font-medium text-gray-800 whitespace-nowrap md:text-sm">
                   {marker?.title || "Untitled"}
                 </td>
 
-                <td className="px-4 py-3 text-sm text-gray-600">
+                <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
                   {(marker?.author?.firstName || "") +
                     " " +
                     (marker?.author?.lastName || "")}
                 </td>
 
-                <td className="px-4 py-3 text-sm text-gray-600">
+                <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
                   {marker?.location?.name ||
                     `${marker?.location?.lat?.toFixed(4) || "?"}, ${marker?.location?.lng?.toFixed(4) || "?"}`}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 ">
+                <td className="px-4 py-3  text-gray-600 whitespace-nowrap">
                   <span
-                    className="px-2 py-1 rounded text-xs"
+                    className="px-2 py-1 rounded text-xs "
                     style={{
                       backgroundColor: marker?.category?.color + "20",
                       color: marker?.category?.color,
@@ -201,7 +199,7 @@ const Markers = ({ markersData, onRefresh }) => {
                     {marker?.category?.name || "Uncategorized"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
+                <td className="px-4 py-3 text-xs text-gray-600 max-w-xs truncate md:text-sm">
                   {marker?.description || "No description"}
                 </td>
 
@@ -220,7 +218,7 @@ const Markers = ({ markersData, onRefresh }) => {
                   </span>
                 </td>
 
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-center">
                   {actionLoading === marker.id ? (
                     <div className="flex justify-end">
                       <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
@@ -244,7 +242,7 @@ const Markers = ({ markersData, onRefresh }) => {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-center gap-2">
                       <button
                         onClick={() => {
                           setShowModal(true);
@@ -270,7 +268,7 @@ const Markers = ({ markersData, onRefresh }) => {
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-center 2xl:hidden">
+      <p className="mt-3 text-center text-sm 2xl:hidden">
         Swipe left or right to view the table 👉📱
       </p>
       <div className="space-x-2 my-4 text-center">
