@@ -48,6 +48,9 @@ const MapPopup = ({ marker, category, onClose }) => {
       {/* Metadata section */}
       <div className="my-2 pt-2 border-t">
         <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+          {(marker?.metadata?.authorName || marker?.author) && (
+            <span>👤 {marker?.metadata?.authorName || marker?.author}</span>
+          )}
           {marker?.createdAt && (
             <span>Added: {formatDate(marker.createdAt)}</span>
           )}
