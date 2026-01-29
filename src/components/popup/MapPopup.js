@@ -69,7 +69,7 @@ const MapPopup = ({ marker, category }) => {
             )}
           </div>
           <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
-            {marker?.author && (
+            {(marker?.metadata?.authorName || marker?.author) && (
               <p className="flex items-center gap-1 text-xs lg:text-sm">
                 <PiPersonArmsSpreadFill className="lg:text-lg" />{" "}
                 {marker?.metadata?.authorName || marker?.author}
