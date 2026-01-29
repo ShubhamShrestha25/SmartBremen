@@ -14,7 +14,6 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [firestoreCategories, setFirestoreCategories] = useState([]);
-
   const { role, userId } = useAuthStore();
 
   // Fetch categories from Firestore
@@ -25,9 +24,8 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
     };
     fetchCategories();
   }, []);
-  
 
-
+  //setting form for new marker or selected marker
   useEffect(() => {
     const initializeForm = () => {
       if (marker) {
@@ -37,7 +35,10 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           lat: marker.location?.lat || marker._original?.lat || "",
           lng: marker.location?.lng || marker._original?.lng || "",
           category: marker.category?.name || "",
-          categoryId: marker.category?.informalityCategoryId || marker._original?.categoryId || "",
+          categoryId:
+            marker.category?.informalityCategoryId ||
+            marker._original?.categoryId ||
+            "",
           description: marker.description || "",
           images: marker.images || [],
           imageFiles: [],
@@ -66,21 +67,21 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
         });
       }
     };
+
     initializeForm();
     setError("");
   }, [marker, show]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleLocationChange = (e) => {
+  const handleAuthorChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      location: {
-        ...prev.location,
+      author: {
+        ...prev.author,
         [name]: value,
       },
     }));
@@ -89,7 +90,9 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
   const handleCategoryChange = (e) => {
     const selectedName = e.target.value;
     // Find matching Firestore category
-    const firestoreCat = firestoreCategories.find((c) => c.name === selectedName);
+    const firestoreCat = firestoreCategories.find(
+      (c) => c.name === selectedName,
+    );
     setFormData((prev) => ({
       ...prev,
       category: selectedName,
@@ -133,8 +136,13 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
 
       if (formData.imageFiles && formData.imageFiles.length > 0) {
         try {
-          const categoryName = firestoreCategories.find(c => c.id === formData.categoryId)?.name || "general";
-          const uploadResult = await uploadToCloudinary(formData.imageFiles[0], categoryName);
+          const categoryName =
+            firestoreCategories.find((c) => c.id === formData.categoryId)
+              ?.name || "general";
+          const uploadResult = await uploadToCloudinary(
+            formData.imageFiles[0],
+            categoryName,
+          );
           imageUrl = uploadResult.imageUrl;
           thumbnailUrl = uploadResult.thumbnailUrl;
           markerUrl = uploadResult.markerUrl;
@@ -157,7 +165,8 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
         artistId: userId,
         metadata: {
           locationName: formData.location || "",
-          authorName: `${formData.author.firstName} ${formData.author.lastName}`.trim(),
+          authorName:
+            `${formData.author.firstName} ${formData.author.lastName}`.trim(),
         },
         imageUrl,
         thumbnailUrl,
@@ -176,7 +185,9 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           throw new Error("Failed to create marker");
         }
         console.log("✅ Created new marker with ID:", newId);
-        alert("Marker created successfully! It will appear after admin approval.");
+        alert(
+          "Marker created successfully! It will appear after admin approval.",
+        );
       }
 
       onRefresh?.();
@@ -192,39 +203,6 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
   if (!show || !formData) return null;
 
   return (
-
-        <h2 className="font-bold mb-4 md:text-xl">
-          {marker ? "Edit Marker" : "Add Marker"}
-        </h2>
-
-      
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-3 text-sm md:text-base"
-        >
-         
-        
-
-          <select
-            name="category"
-            value={formData.category || ""}
-            onChange={handleCategoryChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          >
-            <option value="" disabled>
-              Select Category
-            </option>
-            {firestoreCategories.map((cat) => (
-              <option key={cat.id} value={cat.name}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-
-      
-
     <div className="fixed inset-0 z-50 bg-black/50">
       <div className="flex min-h-dvh items-center justify-center p-3 sm:p-6">
         <div className="relative w-full sm:max-w-lg bg-white rounded-xl shadow-lg max-h-[90dvh] overflow-y-auto p-4 sm:p-6">
@@ -242,10 +220,10 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           </h2>
 
           {error && (
-          <div className="mb-4 p-2 bg-red-100 text-red-600 text-sm rounded">
-            {error}
-          </div>
-        )}
+            <div className="mb-4 p-2 bg-red-100 text-red-600 text-sm rounded">
+              {error}
+            </div>
+          )}
 
           <form
             onSubmit={handleSubmit}
@@ -253,53 +231,57 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           >
             {/* Title */}
             <div>
-              <label className="block font-medium text-sm">Title *</label>
+              <label className="block font-medium mb-1 text-sm">Title *</label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border px-3 py-2 rounded text-sm"
                 required
               />
             </div>
 
-             {/* Location Name */}
+            {/* Location Name */}
             <div>
-            <label className="block font-medium text-sm">
-            Location Name *
-            </label>
-            <input
-            type="text"
-            name="location"
-            placeholder="Location Name (optional)"
-            value={formData.location}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-          />
+              <label className="block font-medium mb-1 text-sm">
+                Location Name *
+              </label>
+              <input
+                type="text"
+                name="location"
+                placeholder="Location Name (optional)"
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded text-sm"
+              />
             </div>
 
             {/* Latitude & Longitude */}
             <div>
-              <label className="block font-medium text-sm">Coordinates *</label>
+              <label className="block font-medium mb-1 text-sm">
+                Coordinates *
+              </label>
+              <div className="flex gap-2">
                 <input
-              type="text"
-              name="lat"
-              placeholder="Latitude"
-              value={formData.lat}
-              onChange={handleChange}
-              className="w-1/2 border px-3 py-2 rounded"
-              required
-            />
-            <input
-              type="text"
-              name="lng"
-              placeholder="Longitude"
-              value={formData.lng}
-              onChange={handleChange}
-              className="w-1/2 border px-3 py-2 rounded"
-              required
-            />
+                  type="text"
+                  name="lat"
+                  placeholder="Latitude"
+                  value={formData.lat}
+                  onChange={handleChange}
+                  className="w-1/2 border px-3 py-2 rounded text-sm"
+                  required
+                />
+                <input
+                  type="text"
+                  name="lng"
+                  placeholder="Longitude"
+                  value={formData.lng}
+                  onChange={handleChange}
+                  className="w-1/2 border px-3 py-2 rounded text-sm"
+                  required
+                />
+              </div>
             </div>
 
             {/* location selection via map */}
@@ -316,12 +298,14 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
 
             {/* Category */}
             <div>
-              <label className="block font-medium text-sm">Category *</label>
+              <label className="block font-medium mb-1 text-sm">
+                Category *
+              </label>
               <select
                 name="category"
                 value={formData.category || ""}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                onChange={handleCategoryChange}
+                className="w-full border px-3 py-2 rounded text-sm"
                 required
               >
                 <option value="" disabled>
@@ -338,12 +322,14 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             {/* Status */}
             {role.toLowerCase() === "admin" && (
               <div>
-                <label className="block font-medium text-sm">Status *</label>
+                <label className="block font-medium mb-1 text-sm">
+                  Status *
+                </label>
                 <select
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full border px-3 py-2 rounded"
+                  className="w-full border px-3 py-2 rounded text-sm"
                   required
                 >
                   <option value="Pending">Pending</option>
@@ -354,27 +340,28 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             )}
 
             {/* Author */}
-            <div className="flex gap-2">
-            <input
-              type="text"
-              name="firstName"
-              placeholder="Author First Name"
-              value={formData.author.firstName}
-              onChange={handleAuthorChange}
-              className="w-1/2 border px-3 py-2 rounded"
-              required
-            />
+            <div>
+              <label className="block font-medium mb-1 text-sm">Author*</label>
+              <div className="flex gap-2 text-sm">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="Author First Name"
+                  value={formData.author.firstName}
+                  onChange={handleAuthorChange}
+                  className="w-1/2 border px-3 py-2 rounded"
+                />
 
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Author Last Name"
-              value={formData.author.lastName}
-              onChange={handleAuthorChange}
-              className="w-1/2 border px-3 py-2 rounded"
-              required
-            />
-          </div>
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Author Last Name"
+                  value={formData.author.lastName}
+                  onChange={handleAuthorChange}
+                  className="w-1/2 border px-3 py-2 rounded"
+                />
+              </div>
+            </div>
 
             {/* Description */}
             <div>
@@ -383,7 +370,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded resize-none"
+                className="w-full border px-3 py-2 rounded text-sm"
                 rows={4}
                 required
               />
@@ -436,33 +423,34 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
               )}
             </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#6BEE32] text-black py-2 rounded hover:border hover:border-[#6BEE32] hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Saving..." : marker ? "Save Changes" : "Add Marker"}
-          </button>
-        </form>
-      </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#6BEE32] text-black py-2 rounded hover:border hover:border-[#6BEE32] hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Saving..." : marker ? "Save Changes" : "Add Marker"}
+            </button>
+          </form>
+        </div>
 
-      {showMiniMap && (
-        <MiniMapPopup
-          setShowMiniMap={setShowMiniMap}
-          lat={formData.location.lat}
-          lng={formData.location.lng}
-          onChange={({ lat, lng }) =>
-            setFormData((prev) => ({
-              ...prev,
-              location: {
-                ...prev.location,
-                lat: lat.toFixed(6),
-                lng: lng.toFixed(6),
-              },
-            }))
-          }
-        />
-      )}
+        {showMiniMap && (
+          <MiniMapPopup
+            setShowMiniMap={setShowMiniMap}
+            lat={formData.location.lat}
+            lng={formData.location.lng}
+            onChange={({ lat, lng }) =>
+              setFormData((prev) => ({
+                ...prev,
+                location: {
+                  ...prev.location,
+                  lat: lat.toFixed(6),
+                  lng: lng.toFixed(6),
+                },
+              }))
+            }
+          />
+        )}
+      </div>
     </div>
   );
 }

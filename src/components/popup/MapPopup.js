@@ -51,25 +51,30 @@ const MapPopup = ({ marker, category }) => {
           <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
             {marker?.author && (
               <p className="flex items-center gap-1 text-xs lg:text-sm">
-               <PiPersonArmsSpreadFill className="lg:text-lg" /> {marker?.metadata?.authorName || marker?.author}
+                <PiPersonArmsSpreadFill className="lg:text-lg" />{" "}
+                {marker?.metadata?.authorName || marker?.author}
               </p>
             )}
             <p className="flex items-center gap-1 text-xs lg:text-sm">
               <FaCameraRetro className="text-lg" /> Apple iPhone 14
             </p>
           </div>
-          {/* Metadata section */}
-     {marker?.metadata?.tags?.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {marker.metadata.tags.map((tag, i) => (
-                <span 
-                  key={i}
-                  className="bg-gray-100 px-2 py-0.5 rounded-full text-[10px]"
-                >
-                  #{tag}
-                </span>
-              ))}
         </div>
+
+        {/* Metadata section */}
+        {marker?.metadata?.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {marker.metadata.tags.map((tag, i) => (
+              <span
+                key={i}
+                className="bg-gray-100 px-2 py-0.5 rounded-full text-[10px]"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+
         <p className="text-xs lg:text-sm">
           {marker?.description || "No description available."}
         </p>
