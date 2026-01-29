@@ -22,19 +22,19 @@ const ImageSlider = ({ images = [] }) => {
 
   const slides = useMemo(() => {
     return images
-      .filter((img) => img?.url)
+      .filter((img) => img)
       .map((img) => {
-        const type = getMediaType(img.url);
+        const type = getMediaType(img);
 
         return type === "video"
-          ? { type: "video", sources: [{ src: img.url }] }
-          : { src: img.url };
+          ? { type: "video", sources: [{ src: img }] }
+          : { src: img };
       });
   }, [images]);
 
   if (!images.length) return null;
 
-  const currentUrl = images[current]?.url;
+  const currentUrl = images[current];
   if (!currentUrl) return null;
 
   const currentType = getMediaType(currentUrl);

@@ -11,7 +11,18 @@ import MarkerPopup from "@/components/popup/MarkerPopup";
 import useAuthStore from "@/store/useAuthStore";
 import { updateImageStatus, deleteImage } from "@/lib/firestore";
 
-const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => {
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+
+import Video from "yet-another-react-lightbox/plugins/video";
+
+const getMediaType = (url = "") => {
+  if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return "video";
+  if (/\.(png|jpe?g|webp|gif|svg)$/i.test(url)) return "image";
+  return "unknown";
+};
+
+const Markers = ({ markersData, onRefresh }) => {
   const [current, setCurrent] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -40,7 +51,7 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
 
   const handleDeleteMarker = async (markerId) => {
     if (!confirm("Are you sure you want to delete this marker?")) return;
-    
+
     setActionLoading(markerId);
     try {
       const success = await deleteImage(markerId);
@@ -145,40 +156,50 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
                     className="relative w-18 h-14 border border-[#6BEE32] rounded-xl flex justify-center items-center cursor-pointer md:w-20 md:h-15"
                   >
                     <Image
-                      src={marker?.images?.[0]?.url || marker?._original?.thumbnailUrl || "/images/marker-popup-default.png"}
+                      src={
+                        marker?.images?.[0]?.url ||
+                        marker?._original?.thumbnailUrl ||
+                        "/images/marker-popup-default.png"
+                      }
                       alt={marker?.title || "Marker"}
                       width={80}
                       height={60}
                       className="w-full h-full rounded-xl object-cover"
                     />
-                    {(marker?.images?.length || 0) > 1 && (
+                    {marker?.images.length > 1 && (
                       <div className="absolute -top-2.5 -right-2.5 flex justify-center items-center w-6 h-6 bg-black text-white rounded-full text-sm">
-                        +{(marker?.images?.length || 1) - 1}
+                        +{marker?.images.length - 1}
                       </div>
                     )}
                   </div>
                 </td>
 
-                <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                <td className="px-4 py-3 text-xs font-medium text-gray-800 whitespace-nowrap md:text-sm">
                   {marker?.title || "Untitled"}
                 </td>
 
-                <td className="px-4 py-3 text-sm text-gray-600">
-                  {(marker?.author?.firstName || "") + " " + (marker?.author?.lastName || "")}
+                <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
+                  {(marker?.author?.firstName || "") +
+                    " " +
+                    (marker?.author?.lastName || "")}
                 </td>
 
-                <td className="px-4 py-3 text-sm text-gray-600">
-                  {marker?.location?.name || `${marker?.location?.lat?.toFixed(4) || "?"}, ${marker?.location?.lng?.toFixed(4) || "?"}`}
+                <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
+                  {marker?.location?.name ||
+                    `${marker?.location?.lat?.toFixed(4) || "?"}, ${marker?.location?.lng?.toFixed(4) || "?"}`}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 ">
-                  <span 
-                    className="px-2 py-1 rounded text-xs"
-                    style={{ backgroundColor: marker?.category?.color + "20", color: marker?.category?.color }}
+                <td className="px-4 py-3  text-gray-600 whitespace-nowrap">
+                  <span
+                    className="px-2 py-1 rounded text-xs "
+                    style={{
+                      backgroundColor: marker?.category?.color + "20",
+                      color: marker?.category?.color,
+                    }}
                   >
                     {marker?.category?.name || "Uncategorized"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
+                <td className="px-4 py-3 text-xs text-gray-600 max-w-xs truncate md:text-sm">
                   {marker?.description || "No description"}
                 </td>
 
@@ -189,21 +210,21 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
                            marker.status?.toLowerCase() === "pending"
                              ? "bg-yellow-100 text-yellow-800"
                              : marker.status?.toLowerCase() === "rejected"
-                             ? "bg-red-100 text-red-800"
-                             : "bg-green-100 text-green-800"
+                               ? "bg-red-100 text-red-800"
+                               : "bg-green-100 text-green-800"
                          }`}
                   >
                     {marker.status}
                   </span>
                 </td>
 
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-center">
                   {actionLoading === marker.id ? (
                     <div className="flex justify-end">
                       <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
                     </div>
                   ) : role === "ADMIN" &&
-                  marker.status?.toLowerCase() === "pending" ? (
+                    marker.status?.toLowerCase() === "pending" ? (
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => handleMarkerApprove(marker.id)}
@@ -221,7 +242,7 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
                       </button>
                     </div>
                   ) : (
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-center gap-2">
                       <button
                         onClick={() => {
                           setShowModal(true);
@@ -247,7 +268,7 @@ const Markers = ({ markersData, categories, onRefresh, isUserView = false }) => 
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-center 2xl:hidden">
+      <p className="mt-3 text-center text-sm 2xl:hidden">
         Swipe left or right to view the table 👉📱
       </p>
       <div className="space-x-2 my-4 text-center">

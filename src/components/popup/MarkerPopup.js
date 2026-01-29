@@ -2,14 +2,19 @@ import { categoryData } from "@/data/categoryData";
 import { useEffect, useState } from "react";
 import { createImageSubmission, getCategories } from "@/lib/firestore";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { MiniMapPopup } from "./MiniMapPopup";
+
+import { FaLocationCrosshairs } from "react-icons/fa6";
+
 import useAuthStore from "@/store/useAuthStore";
 
 export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
   const [formData, setFormData] = useState(null);
+  const [showMiniMap, setShowMiniMap] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [firestoreCategories, setFirestoreCategories] = useState([]);
-  const { userId } = useAuthStore();
+  const { role, userId } = useAuthStore();
 
   // Fetch categories from Firestore
   useEffect(() => {
@@ -30,7 +35,10 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           lat: marker.location?.lat || marker._original?.lat || "",
           lng: marker.location?.lng || marker._original?.lng || "",
           category: marker.category?.name || "",
-          categoryId: marker.category?.informalityCategoryId || marker._original?.categoryId || "",
+          categoryId:
+            marker.category?.informalityCategoryId ||
+            marker._original?.categoryId ||
+            "",
           description: marker.description || "",
           images: marker.images || [],
           imageFiles: [],
@@ -82,7 +90,9 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
   const handleCategoryChange = (e) => {
     const selectedName = e.target.value;
     // Find matching Firestore category
-    const firestoreCat = firestoreCategories.find((c) => c.name === selectedName);
+    const firestoreCat = firestoreCategories.find(
+      (c) => c.name === selectedName,
+    );
     setFormData((prev) => ({
       ...prev,
       category: selectedName,
@@ -126,8 +136,13 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
 
       if (formData.imageFiles && formData.imageFiles.length > 0) {
         try {
-          const categoryName = firestoreCategories.find(c => c.id === formData.categoryId)?.name || "general";
-          const uploadResult = await uploadToCloudinary(formData.imageFiles[0], categoryName);
+          const categoryName =
+            firestoreCategories.find((c) => c.id === formData.categoryId)
+              ?.name || "general";
+          const uploadResult = await uploadToCloudinary(
+            formData.imageFiles[0],
+            categoryName,
+          );
           imageUrl = uploadResult.imageUrl;
           thumbnailUrl = uploadResult.thumbnailUrl;
           markerUrl = uploadResult.markerUrl;
@@ -150,7 +165,8 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
         artistId: userId,
         metadata: {
           locationName: formData.location || "",
-          authorName: `${formData.author.firstName} ${formData.author.lastName}`.trim(),
+          authorName:
+            `${formData.author.firstName} ${formData.author.lastName}`.trim(),
         },
         imageUrl,
         thumbnailUrl,
@@ -169,7 +185,9 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           throw new Error("Failed to create marker");
         }
         console.log("✅ Created new marker with ID:", newId);
-        alert("Marker created successfully! It will appear after admin approval.");
+        alert(
+          "Marker created successfully! It will appear after admin approval.",
+        );
       }
 
       onRefresh?.();
@@ -185,171 +203,253 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
   if (!show || !formData) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-auto">
-      <div className="bg-white p-6 rounded-xl w-85 relative sm:w-96 max-h-[90vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-4 text-[#FF4B4B] cursor-pointer text-xl"
-        >
-          ✕
-        </button>
-
-        <h2 className="font-bold mb-4 md:text-xl">
-          {marker ? "Edit Marker" : "Add Marker"}
-        </h2>
-
-        {error && (
-          <div className="mb-4 p-2 bg-red-100 text-red-600 text-sm rounded">
-            {error}
-          </div>
-        )}
-
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-3 text-sm md:text-base"
-        >
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-
-          <input
-            type="text"
-            name="location"
-            placeholder="Location Name (optional)"
-            value={formData.location}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-          />
-
-          <div className="flex gap-2">
-            <input
-              type="text"
-              name="lat"
-              placeholder="Latitude"
-              value={formData.lat}
-              onChange={handleChange}
-              className="w-1/2 border px-3 py-2 rounded"
-              required
-            />
-            <input
-              type="text"
-              name="lng"
-              placeholder="Longitude"
-              value={formData.lng}
-              onChange={handleChange}
-              className="w-1/2 border px-3 py-2 rounded"
-              required
-            />
-          </div>
-
-          <select
-            name="category"
-            value={formData.category || ""}
-            onChange={handleCategoryChange}
-            className="w-full border px-3 py-2 rounded"
-            required
+    <div className="fixed inset-0 z-50 bg-black/50">
+      <div className="flex min-h-dvh items-center justify-center p-3 sm:p-6">
+        <div className="relative w-full sm:max-w-lg bg-white rounded-xl shadow-lg max-h-[90dvh] overflow-y-auto p-4 sm:p-6">
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-4 text-[#FF4B4B] cursor-pointer text-xl"
+            aria-label="Close"
+            type="button"
           >
-            <option value="" disabled>
-              Select Category
-            </option>
-            {firestoreCategories.map((cat) => (
-              <option key={cat.id} value={cat.name}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+            ✕
+          </button>
 
-          <div className="flex gap-2">
-            <input
-              type="text"
-              name="firstName"
-              placeholder="Author First Name"
-              value={formData.author.firstName}
-              onChange={handleAuthorChange}
-              className="w-1/2 border px-3 py-2 rounded"
-              required
-            />
+          <h2 className="font-bold mb-4 text-lg md:text-xl pr-8">
+            {marker ? "Edit Marker" : "Add Marker"}
+          </h2>
 
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Author Last Name"
-              value={formData.author.lastName}
-              onChange={handleAuthorChange}
-              className="w-1/2 border px-3 py-2 rounded"
-              required
-            />
-          </div>
+          {error && (
+            <div className="mb-4 p-2 bg-red-100 text-red-600 text-sm rounded">
+              {error}
+            </div>
+          )}
 
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded resize-none"
-            rows={4}
-            required
-          />
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4 text-sm md:text-base"
+          >
+            {/* Title */}
+            <div>
+              <label className="block font-medium mb-1 text-sm">Title *</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded text-sm"
+                required
+              />
+            </div>
 
-          {/* Image Upload / Display */}
-          <div>
-            {formData.images.length === 0 && (
-              <label className="w-full flex justify-center items-center border border-gray-300 rounded px-3 py-2 cursor-pointer hover:bg-gray-100">
-                Click here to upload images
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImagesChange}
-                  className="hidden"
-                />
+            {/* Location Name */}
+            <div>
+              <label className="block font-medium mb-1 text-sm">
+                Location Name *
               </label>
-            )}
+              <input
+                type="text"
+                name="location"
+                placeholder="Location Name (optional)"
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded text-sm"
+              />
+            </div>
 
-            {/* Display selected images by filename */}
-            {formData.images.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formData.images.map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded"
-                  >
-                    <span className="text-sm">
-                      {typeof img === "string" ? img : img?.filename}
-                    </span>
+            {/* Latitude & Longitude */}
+            <div>
+              <label className="block font-medium mb-1 text-sm">
+                Coordinates *
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  name="lat"
+                  placeholder="Latitude"
+                  value={formData.lat}
+                  onChange={handleChange}
+                  className="w-1/2 border px-3 py-2 rounded text-sm"
+                  required
+                />
+                <input
+                  type="text"
+                  name="lng"
+                  placeholder="Longitude"
+                  value={formData.lng}
+                  onChange={handleChange}
+                  className="w-1/2 border px-3 py-2 rounded text-sm"
+                  required
+                />
+              </div>
+            </div>
 
-                    <button
-                      type="button"
-                      className="text-red-500 font-bold hover:text-red-700"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          images: prev.images.filter((_, i) => i !== idx),
-                        }))
-                      }
-                    >
-                      ×
-                    </button>
-                  </div>
+            {/* location selection via map */}
+            <div className="w-full bg-[#0000FF] text-white py-2 flex justify-center rounded hover:border hover:border-[#0000FF] hover:text-black hover:bg-transparent">
+              <button
+                type="button"
+                onClick={() => setShowMiniMap(true)}
+                className="flex items-center gap-2 cursor-pointer text-sm"
+              >
+                <FaLocationCrosshairs className="text-lg text-[#FF4B4B]" />
+                Select Location on Map (Optional)
+              </button>
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block font-medium mb-1 text-sm">
+                Category *
+              </label>
+              <select
+                name="category"
+                value={formData.category || ""}
+                onChange={handleCategoryChange}
+                className="w-full border px-3 py-2 rounded text-sm"
+                required
+              >
+                <option value="" disabled>
+                  Select Category
+                </option>
+                {categoryData.map((cat) => (
+                  <option key={cat.id} value={cat.title}>
+                    {cat.title}
+                  </option>
                 ))}
+              </select>
+            </div>
+
+            {/* Status */}
+            {role.toLowerCase() === "admin" && (
+              <div>
+                <label className="block font-medium mb-1 text-sm">
+                  Status *
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded text-sm"
+                  required
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
               </div>
             )}
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#6BEE32] text-black py-2 rounded hover:border hover:border-[#6BEE32] hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Saving..." : marker ? "Save Changes" : "Add Marker"}
-          </button>
-        </form>
+            {/* Author */}
+            <div>
+              <label className="block font-medium mb-1 text-sm">Author*</label>
+              <div className="flex gap-2 text-sm">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="Author First Name"
+                  value={formData.author.firstName}
+                  onChange={handleAuthorChange}
+                  className="w-1/2 border px-3 py-2 rounded"
+                />
+
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Author Last Name"
+                  value={formData.author.lastName}
+                  onChange={handleAuthorChange}
+                  className="w-1/2 border px-3 py-2 rounded"
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block font-medium text-sm">Description *</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded text-sm"
+                rows={4}
+                required
+              />
+            </div>
+
+            {/* Images */}
+            <div>
+              <label className="block font-medium text-sm">Images</label>
+
+              {formData.images.length === 0 && (
+                <label className="w-full flex justify-center items-center border border-gray-300 rounded px-3 py-2 cursor-pointer hover:bg-gray-100">
+                  Click here to upload images
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImagesChange}
+                    className="hidden"
+                  />
+                </label>
+              )}
+
+              {formData.images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.images.map((img, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded max-w-full"
+                    >
+                      <span className="text-sm truncate max-w-[220px] sm:max-w-[320px]">
+                        {typeof img === "string" ? img : img?.filename}
+                      </span>
+
+                      <button
+                        type="button"
+                        className="text-red-500 font-bold hover:text-red-700"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            images: prev.images.filter((_, i) => i !== idx),
+                          }))
+                        }
+                        aria-label="Remove image"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#6BEE32] text-black py-2 rounded hover:border hover:border-[#6BEE32] hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Saving..." : marker ? "Save Changes" : "Add Marker"}
+            </button>
+          </form>
+        </div>
+
+        {showMiniMap && (
+          <MiniMapPopup
+            setShowMiniMap={setShowMiniMap}
+            lat={formData.location.lat}
+            lng={formData.location.lng}
+            onChange={({ lat, lng }) =>
+              setFormData((prev) => ({
+                ...prev,
+                location: {
+                  ...prev.location,
+                  lat: lat.toFixed(6),
+                  lng: lng.toFixed(6),
+                },
+              }))
+            }
+          />
+        )}
       </div>
     </div>
   );
