@@ -4,6 +4,7 @@ import { IoLocationSharp } from "react-icons/io5";
 import { PiPersonArmsSpreadFill } from "react-icons/pi";
 import { SlCalender } from "react-icons/sl";
 import { MdCategory } from "react-icons/md";
+import { FiExternalLink } from "react-icons/fi";
 
 const MapPopup = ({ marker, category }) => {
   // Build images array from marker data - Slider expects array of URL strings
@@ -23,6 +24,12 @@ const MapPopup = ({ marker, category }) => {
   };
 
   const subcategoryName = getSubcategoryName();
+
+  // Open location in Google Maps
+  const openInGoogleMaps = () => {
+    const url = `https://www.google.com/maps?q=${marker.lat},${marker.lng}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   // Format date
   const formatDate = (date) => {
@@ -57,10 +64,15 @@ const MapPopup = ({ marker, category }) => {
             )}
           </div>
           <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
-            <p className="flex items-center gap-1 text-xs lg:text-sm">
+            <button
+              onClick={openInGoogleMaps}
+              className="flex items-center gap-1 text-xs lg:text-sm hover:text-blue-600 hover:underline cursor-pointer transition-colors"
+              title="Open in Google Maps"
+            >
               <IoLocationSharp className="text-lg text-black" />{" "}
               {marker.lat.toFixed(4)}, {marker.lng.toFixed(4)}
-            </p>
+              <FiExternalLink className="text-xs" />
+            </button>
             {marker?.createdAt && (
               <p className="flex items-center gap-1 text-xs lg:text-sm">
                 <SlCalender className="text-lg" />
