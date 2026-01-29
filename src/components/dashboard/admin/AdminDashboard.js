@@ -1,18 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import UsersTable from "./UsersTable";
+import UsersTable from "./table/UsersTable";
 import MarkersTable from "../MarkersTable";
 import UsersChart from "./charts/UsersChart";
 import LogoutBtn from "@/components/LogoutBtn";
 import MarkersChart from "./charts/MarkersChart";
-import { getFormattedMarkers, getAllUsers, getCategories } from "@/lib/firestore";
+import {
+  getFormattedMarkers,
+  getAllUsers,
+  getCategories,
+} from "@/lib/firestore";
+import CategoriesTable from "./table/CategoriesTable";
+import TableTabs from "./TableTabs";
 
 export default function AdminDashboard() {
   const [markersData, setMarkersData] = useState([]);
   const [usersData, setUsersData] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [activeTable, setActiveTable] = useState("markers");
 
   // Fetch data from Firestore
   const fetchData = async () => {
@@ -50,25 +58,40 @@ export default function AdminDashboard() {
         </h1>
         <LogoutBtn />
       </div>
-      
+
       {loading ? (
         <div className="flex justify-center py-10">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
         </div>
       ) : (
         <>
-          <div className="flex gap-6">
+          <div className="flex flex-col gap-6 md:flex-row">
             <UsersChart usersData={usersData} />
             <MarkersChart markersData={markersData} />
           </div>
 
           <div className="space-y-10">
-            <UsersTable usersData={usersData} onRefresh={handleRefresh} />
-            <MarkersTable 
-              markersData={markersData} 
-              categories={categories}
-              onRefresh={handleRefresh} 
+            <TableTabs
+              activeTable={activeTable}
+              setActiveTable={setActiveTable}
             />
+
+            {activeTable === "users" && (
+              <UsersTable usersData={usersData} onRefresh={handleRefresh} />
+            )}
+            {activeTable === "markers" && (
+              <MarkersTable
+                markersData={markersData}
+                categories={categories}
+                onRefresh={handleRefresh}
+              />
+            )}
+            {activeTable === "categories" && (
+              <CategoriesTable
+                categoriesData={categories}
+                onRefresh={handleRefresh}
+              />
+            )}
           </div>
         </>
       )}

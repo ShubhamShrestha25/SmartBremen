@@ -54,16 +54,16 @@ const Users = ({ usersData = [], onRefresh }) => {
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
                 Email
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600  md:text-sm">
                 Role
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600  md:text-sm">
                 Joined
               </th>
-              <th className="px-4 py-3 text-center text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-600  md:text-sm">
                 Upload Enabled
               </th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-gray-600">
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-600  md:text-sm">
                 Actions
               </th>
             </tr>
@@ -79,15 +79,15 @@ const Users = ({ usersData = [], onRefresh }) => {
             ) : (
               usersData.map((user) => (
                 <tr key={user.uid} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                  <td className="px-4 py-3 text-xs font-medium text-gray-800 whitespace-nowrap md:text-sm">
                     {user.name || "Unnamed"}
                   </td>
 
-                  <td className="px-4 py-3 text-sm text-gray-600">
+                  <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
                     {user.email}
                   </td>
 
-                  <td className="px-4 py-3 text-sm">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                         user.role === "admin"
@@ -99,7 +99,7 @@ const Users = ({ usersData = [], onRefresh }) => {
                     </span>
                   </td>
 
-                  <td className="px-4 py-3 text-sm text-gray-600">
+                  <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
                     {formatDate(user.createdAt)}
                   </td>
 
@@ -112,7 +112,11 @@ const Users = ({ usersData = [], onRefresh }) => {
                       <button
                         onClick={() => handleToggleUpload(user)}
                         className="text-2xl"
-                        title={user.uploadEnabled ? "Disable uploads" : "Enable uploads"}
+                        title={
+                          user.uploadEnabled
+                            ? "Disable uploads"
+                            : "Enable uploads"
+                        }
                       >
                         {user.uploadEnabled ? (
                           <IoToggle className="text-green-500" />
@@ -125,7 +129,7 @@ const Users = ({ usersData = [], onRefresh }) => {
 
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
-                      <button 
+                      <button
                         className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
                         title="Delete user"
                       >
@@ -139,7 +143,7 @@ const Users = ({ usersData = [], onRefresh }) => {
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-center sm:hidden">
+      <p className="mt-3 text-center text-sm sm:hidden">
         Swipe left or right to view the table 👉📱
       </p>
       {/* Pagination */}
