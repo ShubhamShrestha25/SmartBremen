@@ -3,12 +3,26 @@ import { FaCameraRetro } from "react-icons/fa";
 import { IoLocationSharp } from "react-icons/io5";
 import { PiPersonArmsSpreadFill } from "react-icons/pi";
 import { SlCalender } from "react-icons/sl";
+import { MdCategory } from "react-icons/md";
 
 const MapPopup = ({ marker, category }) => {
-  // Build images array from marker data
-  const images = marker?.imageUrl
-    ? [marker.imageUrl, marker.thumbnailUrl].filter(Boolean)
-    : ["/images/marker-popup-default.png"];
+  // Build images array from marker data - Slider expects array of URL strings
+  const images = marker?.images?.length > 0
+    ? marker.images.map((img) => img?.url || img).filter(Boolean)
+    : marker?.imageUrl
+      ? [marker.imageUrl]
+      : ["/images/marker-popup-default.png"];
+
+  // Get subcategory name
+  const getSubcategoryName = () => {
+    if (!marker?.subcategoryId || !category?.subcategories) return null;
+    const subcategory = category.subcategories.find(
+      (sub) => sub.id === marker.subcategoryId
+    );
+    return subcategory?.name || null;
+  };
+
+  const subcategoryName = getSubcategoryName();
 
   // Format date
   const formatDate = (date) => {
@@ -35,6 +49,12 @@ const MapPopup = ({ marker, category }) => {
             >
               {category?.name || "Uncategorized"}
             </p>
+            {subcategoryName && (
+              <p className="flex items-center gap-1 text-xs text-gray-600 mt-0.5">
+                <MdCategory className="text-sm" />
+                {subcategoryName}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
             <p className="flex items-center gap-1 text-xs lg:text-sm">

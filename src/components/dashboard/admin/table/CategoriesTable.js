@@ -1,14 +1,33 @@
 "use client";
 
 import CategoryPopup from "@/components/popup/CategoryPopup";
+import Pagination from "@/components/Pagination";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { MdAddCircle, MdEdit } from "react-icons/md";
 
 const CategoriesTable = ({ categoriesData }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Calculate paginated data
+  const totalItems = categoriesData?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedCategories = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return categoriesData?.slice(startIndex, startIndex + itemsPerPage) || [];
+  }, [categoriesData, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when items per page changes
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
 
   const openAdd = () => {
     setActiveCategory(null);
@@ -59,7 +78,7 @@ const CategoriesTable = ({ categoriesData }) => {
           </thead>
 
           <tbody className="divide-y divide-gray-200 bg-white">
-            {categoriesData?.map((cat) => (
+            {paginatedCategories?.map((cat) => (
               <tr key={cat.id} className="hover:bg-gray-50">
                 <td className="px-4 py-3">
                   <div className="relative w-8 h-8 cursor-pointer">
@@ -116,6 +135,15 @@ const CategoriesTable = ({ categoriesData }) => {
       <p className="mt-3 text-center text-sm 2xl:hidden">
         Swipe left or right to view the table 👉📱
       </p>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
+        totalItems={totalItems}
+      />
 
       <CategoryPopup
         show={showPopup}

@@ -14,6 +14,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [firestoreCategories, setFirestoreCategories] = useState([]);
+  const [availableSubcategories, setAvailableSubcategories] = useState([]);
   const { role, userId } = useAuthStore();
 
   // Fetch categories from Firestore
@@ -39,6 +40,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             marker.category?.informalityCategoryId ||
             marker._original?.categoryId ||
             "",
+          subcategoryId: marker._original?.subcategoryId || "",
           description: marker.description || "",
           images: marker.images || [],
           imageFiles: [],
@@ -48,6 +50,13 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             lastName: marker.author?.lastName || "",
           },
         });
+        // Set available subcategories for existing marker
+        const catId = marker.category?.informalityCategoryId || marker._original?.categoryId;
+        if (catId) {
+          const cat = firestoreCategories.find(c => c.id === catId) || 
+                      categoryData.find(c => c.id === catId);
+          setAvailableSubcategories(cat?.subcategories || []);
+        }
       } else {
         setFormData({
           title: "",
@@ -56,6 +65,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           lng: "8.8017",
           category: "",
           categoryId: "",
+          subcategoryId: "",
           description: "",
           images: [],
           imageFiles: [],
@@ -65,6 +75,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             lastName: "",
           },
         });
+        setAvailableSubcategories([]);
       }
     };
 
@@ -93,10 +104,25 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
     const firestoreCat = firestoreCategories.find(
       (c) => c.name === selectedName,
     );
+    // Also check categoryData for subcategories
+    const localCat = categoryData.find((c) => c.title === selectedName);
+    
     setFormData((prev) => ({
       ...prev,
       category: selectedName,
-      categoryId: firestoreCat?.id || "",
+      categoryId: firestoreCat?.id || localCat?.id || "",
+      subcategoryId: "", // Reset subcategory when category changes
+    }));
+    
+    // Update available subcategories
+    const subcats = firestoreCat?.subcategories || localCat?.subcategories || [];
+    setAvailableSubcategories(subcats);
+  };
+
+  const handleSubcategoryChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      subcategoryId: e.target.value,
     }));
   };
 
@@ -139,9 +165,13 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           const categoryName =
             firestoreCategories.find((c) => c.id === formData.categoryId)
               ?.name || "general";
+          const subcategoryName = availableSubcategories.find(
+            (s) => s.id === formData.subcategoryId
+          )?.name || null;
           const uploadResult = await uploadToCloudinary(
             formData.imageFiles[0],
             categoryName,
+            subcategoryName,
           );
           imageUrl = uploadResult.imageUrl;
           thumbnailUrl = uploadResult.thumbnailUrl;
@@ -162,6 +192,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
         lat: parseFloat(formData.lat),
         lng: parseFloat(formData.lng),
         categoryId: formData.categoryId,
+        subcategoryId: formData.subcategoryId || null,
         artistId: userId,
         metadata: {
           locationName: formData.location || "",
@@ -318,6 +349,28 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
                 ))}
               </select>
             </div>
+
+            {/* Subcategory - only show if category has subcategories */}
+            {availableSubcategories.length > 0 && (
+              <div>
+                <label className="block font-medium mb-1 text-sm">
+                  Subcategory
+                </label>
+                <select
+                  name="subcategoryId"
+                  value={formData.subcategoryId || ""}
+                  onChange={handleSubcategoryChange}
+                  className="w-full border px-3 py-2 rounded text-sm"
+                >
+                  <option value="">Select Subcategory (optional)</option>
+                  {availableSubcategories.map((sub) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Status */}
             {role.toLowerCase() === "admin" && (

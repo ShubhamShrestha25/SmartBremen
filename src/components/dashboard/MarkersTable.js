@@ -8,6 +8,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { MdAddCircle, MdEdit } from "react-icons/md";
 
 import MarkerPopup from "@/components/popup/MarkerPopup";
+import Pagination from "@/components/Pagination";
 import useAuthStore from "@/store/useAuthStore";
 import { updateImageStatus, deleteImage } from "@/lib/firestore";
 
@@ -22,14 +23,44 @@ const getMediaType = (url = "") => {
   return "unknown";
 };
 
-const Markers = ({ markersData, onRefresh }) => {
+const Markers = ({ markersData, categories = [], onRefresh }) => {
   const [current, setCurrent] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const { role, userId } = useAuthStore();
+
+  // Helper to get subcategory name
+  const getSubcategoryName = (marker) => {
+    if (!marker?._original?.subcategoryId) return null;
+    const categoryId = marker?.category?.informalityCategoryId || marker?._original?.categoryId;
+    const category = categories.find((c) => c.id === categoryId);
+    if (!category?.subcategories) return null;
+    const subcategory = category.subcategories.find(
+      (sub) => sub.id === marker._original.subcategoryId
+    );
+    return subcategory?.name || null;
+  };
+
+  // Calculate paginated data
+  const totalItems = markersData?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedMarkers = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return markersData?.slice(startIndex, startIndex + itemsPerPage) || [];
+  }, [markersData, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when items per page changes
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
 
   // Used by the lightbox to display images or videos in fullscreen
   const slides = useMemo(() => {
@@ -145,7 +176,7 @@ const Markers = ({ markersData, onRefresh }) => {
           </thead>
 
           <tbody className="divide-y divide-gray-200 bg-white">
-            {markersData?.map((marker) => (
+            {paginatedMarkers?.map((marker) => (
               <tr key={marker.id} className="hover:bg-gray-50">
                 <td className="px-4 py-3">
                   <div
@@ -189,15 +220,22 @@ const Markers = ({ markersData, onRefresh }) => {
                     `${marker?.location?.lat?.toFixed(4) || "?"}, ${marker?.location?.lng?.toFixed(4) || "?"}`}
                 </td>
                 <td className="px-4 py-3  text-gray-600 whitespace-nowrap">
-                  <span
-                    className="px-2 py-1 rounded text-xs "
-                    style={{
-                      backgroundColor: marker?.category?.color + "20",
-                      color: marker?.category?.color,
-                    }}
-                  >
-                    {marker?.category?.name || "Uncategorized"}
-                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span
+                      className="px-2 py-1 rounded text-xs "
+                      style={{
+                        backgroundColor: marker?.category?.color + "20",
+                        color: marker?.category?.color,
+                      }}
+                    >
+                      {marker?.category?.name || "Uncategorized"}
+                    </span>
+                    {getSubcategoryName(marker) && (
+                      <span className="text-xs text-gray-500 pl-1">
+                        ↳ {getSubcategoryName(marker)}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-xs text-gray-600 max-w-xs truncate md:text-sm">
                   {marker?.description || "No description"}
@@ -271,19 +309,16 @@ const Markers = ({ markersData, onRefresh }) => {
       <p className="mt-3 text-center text-sm 2xl:hidden">
         Swipe left or right to view the table 👉📱
       </p>
-      <div className="space-x-2 my-4 text-center">
-        <button className="px-3 py-1 text-sm border rounded border-[#6BEE32]">
-          1
-        </button>
 
-        <button className="px-3 py-1 text-sm border rounded border-gray-300 hover:bg-gray-100">
-          2
-        </button>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
+        totalItems={totalItems}
+      />
 
-        <button className="px-3 py-1 text-sm border rounded border-gray-300 hover:bg-gray-100">
-          3
-        </button>
-      </div>
       <MarkerPopup
         show={showModal}
         onClose={() => {
