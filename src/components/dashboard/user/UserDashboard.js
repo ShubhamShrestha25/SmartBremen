@@ -5,7 +5,11 @@ import MarkerTable from "../MarkersTable";
 import UserDetails from "./UserDetails";
 import LogoutBtn from "@/components/LogoutBtn";
 import useAuthStore from "@/store/useAuthStore";
-import { getImagesByArtist, getCategories, getUserProfile } from "@/lib/firestore";
+import {
+  getImagesByArtist,
+  getCategories,
+  getUserProfile,
+} from "@/lib/firestore";
 
 export default function UserDashboard() {
   const { userId } = useAuthStore();
@@ -17,7 +21,7 @@ export default function UserDashboard() {
   // Fetch user's markers from Firestore
   const fetchData = async () => {
     if (!userId) return;
-    
+
     setLoading(true);
     try {
       const [images, cats, profile] = await Promise.all([
@@ -33,7 +37,9 @@ export default function UserDashboard() {
           id: img.id,
           title: img.title || "Untitled",
           description: img.description || "",
-          status: img.status?.charAt(0).toUpperCase() + img.status?.slice(1) || "Pending",
+          status:
+            img.status?.charAt(0).toUpperCase() + img.status?.slice(1) ||
+            "Pending",
           category: {
             informalityCategoryId: img.categoryId,
             name: category?.name || "Unknown",
@@ -81,21 +87,21 @@ export default function UserDashboard() {
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-5 items-center justify-between sm:flex-row">
         <UserDetails userProfile={userProfile} />
         <LogoutBtn />
       </div>
-      
+
       {loading ? (
         <div className="flex justify-center py-10">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
         </div>
       ) : (
-        <MarkerTable 
-          markersData={markersData} 
+        <MarkerTable
+          markersData={markersData}
           categories={categories}
           onRefresh={handleRefresh}
-          isUserView={true}
+          userProfile={userProfile}
         />
       )}
     </div>
