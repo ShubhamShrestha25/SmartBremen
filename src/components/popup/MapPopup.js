@@ -8,17 +8,18 @@ import { FiExternalLink } from "react-icons/fi";
 
 const MapPopup = ({ marker, category }) => {
   // Build images array from marker data - Slider expects array of URL strings
-  const images = marker?.images?.length > 0
-    ? marker.images.map((img) => img?.url || img).filter(Boolean)
-    : marker?.imageUrl
-      ? [marker.imageUrl]
-      : ["/images/marker-popup-default.png"];
+  const images =
+    marker?.images?.length > 0
+      ? marker.images.map((img) => img?.url || img).filter(Boolean)
+      : marker?.imageUrl
+        ? [marker.imageUrl]
+        : ["/images/marker-popup-default.png"];
 
   // Get subcategory name
   const getSubcategoryName = () => {
     if (!marker?.subcategoryId || !category?.subcategories) return null;
     const subcategory = category.subcategories.find(
-      (sub) => sub.id === marker.subcategoryId
+      (sub) => sub.id === marker.subcategoryId,
     );
     return subcategory?.name || null;
   };
@@ -43,7 +44,7 @@ const MapPopup = ({ marker, category }) => {
 
   return (
     <div>
-      <div className="relative z-10 bg-white rounded-[18px] p-2 w-[330px] mx-auto border-2 border-[#6BEE32] sm:mx-0 sm:left-10  lg:w-[350px]">
+      <div className="relative left-1.5 z-10 bg-white rounded-[18px] p-2 w-[330px] mx-auto  border-2 border-[#6BEE32] sm:mx-0 sm:left-10  lg:w-[350px]">
         <ImageSlider images={images} />
         <div className="border-b pb-2 my-2 space-y-2">
           <div>
@@ -95,7 +96,7 @@ const MapPopup = ({ marker, category }) => {
 
         {/* Metadata section */}
         {marker?.metadata?.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1 mb">
             {marker.metadata.tags.map((tag, i) => (
               <span
                 key={i}
@@ -107,9 +108,11 @@ const MapPopup = ({ marker, category }) => {
           </div>
         )}
 
-        <p className="text-xs lg:text-sm">
-          {marker?.description || "No description available."}
-        </p>
+        {marker?.description && (
+          <p className="text-xs mt-2.5 lg:text-sm">
+            {marker?.description || "No description available."}
+          </p>
+        )}
       </div>
     </div>
   );

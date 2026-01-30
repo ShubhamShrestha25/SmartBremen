@@ -14,6 +14,7 @@ import MapFilter from "@/components/MapFilter";
 import MapPopup from "@/components/popup/MapPopup";
 
 import { getApprovedImages, getCategories } from "@/lib/firestore";
+import MapIconToggle from "@/components/MapIconToggle";
 
 export default function Map() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,7 @@ export default function Map() {
   const [isClient, setIsClient] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [markerMode, setMarkerMode] = useState("icon");
 
   // Firestore data
   const [markers, setMarkers] = useState([]);
@@ -119,14 +121,20 @@ export default function Map() {
       const el = document.createElement("div");
 
       const img = document.createElement("img");
-      img.src = cat.iconUrl;
+      img.src = markerMode === "icon" ? cat.iconUrl : data.imageUrl;
       img.alt = data.title || "Marker";
+
       el.style.width = "32px";
       el.style.height = "32px";
+      el.style.cursor = "pointer";
+
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.display = "block";
       img.style.borderRadius = "50%";
       img.style.objectFit = "cover";
-      img.style.border = `2px solid white`;
-      el.style.cursor = "pointer";
+      img.style.border = `2px solid ${markerMode === "icon" ? "white" : cat?.color}`;
+
       el.appendChild(img);
 
       const marker = new maptilersdk.Marker({ element: el })
@@ -151,7 +159,7 @@ export default function Map() {
         marker.remove();
       });
     };
-  }, [mapReady, filteredMarkers, categories, isLoading]);
+  }, [mapReady, markerMode, filteredMarkers, categories, isLoading]);
 
   const handleCategoryFilter = useCallback((categoryId) => {
     setActiveCategory((prev) => (prev === categoryId ? null : categoryId));
@@ -160,7 +168,7 @@ export default function Map() {
   if (!isClient) return null;
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full h-[calc(100dvh-60px)] lg:h-[calc(100dvh-80px)]">
       <MapFilter
         categories={categories}
         activeCategory={activeCategory}
@@ -187,6 +195,8 @@ export default function Map() {
           />
         </div>
       )}
+
+      <MapIconToggle markerMode={markerMode} setMarkerMode={setMarkerMode} />
     </div>
   );
 }
