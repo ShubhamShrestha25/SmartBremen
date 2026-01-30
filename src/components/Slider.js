@@ -3,41 +3,21 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
-import { IoPlayCircle } from "react-icons/io5";
-
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
-
-import Video from "yet-another-react-lightbox/plugins/video";
-
-const getMediaType = (url = "") => {
-  if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return "video";
-  if (/\.(png|jpe?g|webp|gif|svg)$/i.test(url)) return "image";
-  return "unknown";
-};
 
 const ImageSlider = ({ images = [] }) => {
   const [current, setCurrent] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
   const slides = useMemo(() => {
-    return images
-      .filter((img) => img)
-      .map((img) => {
-        const type = getMediaType(img);
-
-        return type === "video"
-          ? { type: "video", sources: [{ src: img }] }
-          : { src: img };
-      });
+    return images.filter(Boolean).map((img) => ({ src: img }));
   }, [images]);
 
   if (!images.length) return null;
 
   const currentUrl = images[current];
   if (!currentUrl) return null;
-
-  const currentType = getMediaType(currentUrl);
 
   const next = () => setCurrent((prev) => (prev + 1) % images.length);
   const prev = () =>
@@ -46,27 +26,13 @@ const ImageSlider = ({ images = [] }) => {
   return (
     <>
       <div className="relative w-full h-40 overflow-hidden rounded-xl">
-        {currentType === "video" ? (
-          <div className="relative" onClick={() => setIsOpen(true)}>
-            <video
-              src={currentUrl}
-              className="w-full h-full object-cover cursor-pointer"
-              playsInline
-              muted
-            />
-            <div>
-              <IoPlayCircle className="absolute top-20 left-1/2 z-40 -translate-x-1/2 -translate-y-1/2 cursor-pointer text-5xl shadow text-[#6BEE32]" />
-            </div>
-          </div>
-        ) : (
-          <Image
-            src={currentUrl}
-            alt={images[current]?.filename ?? ""}
-            fill
-            className="object-cover cursor-pointer"
-            onClick={() => setIsOpen(true)}
-          />
-        )}
+        <Image
+          src={currentUrl}
+          alt={images[current]?.filename ?? ""}
+          fill
+          className="object-cover cursor-pointer"
+          onClick={() => setIsOpen(true)}
+        />
 
         {images.length > 1 && (
           <>
@@ -104,7 +70,6 @@ const ImageSlider = ({ images = [] }) => {
         open={isOpen}
         close={() => setIsOpen(false)}
         slides={slides}
-        plugins={[Video]}
         index={current}
         view={{ closeOnBackdropClick: true }}
         on={{

@@ -15,14 +15,6 @@ import { updateImageStatus, deleteImage } from "@/lib/firestore";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
-import Video from "yet-another-react-lightbox/plugins/video";
-
-const getMediaType = (url = "") => {
-  if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return "video";
-  if (/\.(png|jpe?g|webp|gif|svg)$/i.test(url)) return "image";
-  return "unknown";
-};
-
 const Markers = ({ markersData, categories = [], onRefresh }) => {
   const [current, setCurrent] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -39,11 +31,12 @@ const Markers = ({ markersData, categories = [], onRefresh }) => {
   // Helper to get subcategory name
   const getSubcategoryName = (marker) => {
     if (!marker?._original?.subcategoryId) return null;
-    const categoryId = marker?.category?.informalityCategoryId || marker?._original?.categoryId;
+    const categoryId =
+      marker?.category?.informalityCategoryId || marker?._original?.categoryId;
     const category = categories.find((c) => c.id === categoryId);
     if (!category?.subcategories) return null;
     const subcategory = category.subcategories.find(
-      (sub) => sub.id === marker._original.subcategoryId
+      (sub) => sub.id === marker._original.subcategoryId,
     );
     return subcategory?.name || null;
   };
@@ -62,22 +55,12 @@ const Markers = ({ markersData, categories = [], onRefresh }) => {
     setCurrentPage(1);
   };
 
-  // Used by the lightbox to display images or videos in fullscreen
+  // Used by the lightbox to display images in fullscreen
   const slides = useMemo(() => {
     return (selectedMarker?.images ?? [])
       .map((img) => img?.url)
       .filter(Boolean)
-      .map((url) => {
-        const type = getMediaType(url);
-
-        if (type === "video") {
-          return {
-            type: "video",
-            sources: [{ src: url }],
-          };
-        }
-        return { src: url };
-      });
+      .map((url) => ({ src: url }));
   }, [selectedMarker]);
 
   const handleDeleteMarker = async (markerId) => {
@@ -326,12 +309,12 @@ const Markers = ({ markersData, categories = [], onRefresh }) => {
           setSelectedMarker(null);
         }}
         marker={selectedMarker}
+        onRefresh={onRefresh}
       />
       <Lightbox
         open={isOpen}
         close={() => setIsOpen(false)}
         slides={slides}
-        plugins={[Video]}
         index={current}
         view={{ closeOnBackdropClick: true }}
         on={{

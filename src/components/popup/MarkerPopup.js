@@ -1,4 +1,3 @@
-import { categoryData } from "@/data/categoryData";
 import { useEffect, useState } from "react";
 import { createImageSubmission, getCategories } from "@/lib/firestore";
 import { uploadToCloudinary } from "@/lib/cloudinary";
@@ -51,10 +50,11 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           },
         });
         // Set available subcategories for existing marker
-        const catId = marker.category?.informalityCategoryId || marker._original?.categoryId;
+        const catId =
+          marker.category?.informalityCategoryId ||
+          marker._original?.categoryId;
         if (catId) {
-          const cat = firestoreCategories.find(c => c.id === catId) || 
-                      categoryData.find(c => c.id === catId);
+          const cat = firestoreCategories.find((c) => c.id === catId);
           setAvailableSubcategories(cat?.subcategories || []);
         }
       } else {
@@ -104,18 +104,16 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
     const firestoreCat = firestoreCategories.find(
       (c) => c.name === selectedName,
     );
-    // Also check categoryData for subcategories
-    const localCat = categoryData.find((c) => c.title === selectedName);
-    
+
     setFormData((prev) => ({
       ...prev,
       category: selectedName,
-      categoryId: firestoreCat?.id || localCat?.id || "",
+      categoryId: firestoreCat?.id || "",
       subcategoryId: "", // Reset subcategory when category changes
     }));
-    
+
     // Update available subcategories
-    const subcats = firestoreCat?.subcategories || localCat?.subcategories || [];
+    const subcats = firestoreCat?.subcategories || [];
     setAvailableSubcategories(subcats);
   };
 
@@ -165,9 +163,9 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           const categoryName =
             firestoreCategories.find((c) => c.id === formData.categoryId)
               ?.name || "general";
-          const subcategoryName = availableSubcategories.find(
-            (s) => s.id === formData.subcategoryId
-          )?.name || null;
+          const subcategoryName =
+            availableSubcategories.find((s) => s.id === formData.subcategoryId)
+              ?.name || null;
           const uploadResult = await uploadToCloudinary(
             formData.imageFiles[0],
             categoryName,
@@ -342,9 +340,9 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
                 <option value="" disabled>
                   Select Category
                 </option>
-                {categoryData.map((cat) => (
-                  <option key={cat.id} value={cat.title}>
-                    {cat.title}
+                {firestoreCategories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
                   </option>
                 ))}
               </select>
@@ -373,7 +371,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             )}
 
             {/* Status */}
-            {role.toLowerCase() === "admin" && (
+            {role.toLowerCase() === "admin" && marker && (
               <div>
                 <label className="block font-medium mb-1 text-sm">
                   Status *
@@ -489,16 +487,13 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
         {showMiniMap && (
           <MiniMapPopup
             setShowMiniMap={setShowMiniMap}
-            lat={formData.location.lat}
-            lng={formData.location.lng}
+            lat={formData.lat}
+            lng={formData.lng}
             onChange={({ lat, lng }) =>
               setFormData((prev) => ({
                 ...prev,
-                location: {
-                  ...prev.location,
-                  lat: lat.toFixed(6),
-                  lng: lng.toFixed(6),
-                },
+                lat: lat.toFixed(4),
+                lng: lng.toFixed(4),
               }))
             }
           />
