@@ -171,6 +171,29 @@ export const getAllUsers = async () => {
 // ============================================
 
 /**
+ * Update an image
+ */
+export const updateImageSubmission = async (imageId, data) => {
+  try {
+    const imageRef = doc(db, COLLECTIONS.IMAGES, imageId);
+
+    // Optional: prevent accidental writes of undefined
+    const cleaned = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== undefined)
+    );
+
+    await updateDoc(imageRef, {
+      ...cleaned,
+      updatedAt: serverTimestamp(),
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Error updating image submission:", error);
+    return false;
+  }
+};
+/**
  * Update image status (approve/reject)
  */
 export const updateImageStatus = async (imageId, status, approvedBy = null) => {

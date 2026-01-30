@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { createImageSubmission, getCategories } from "@/lib/firestore";
+import {
+  createImageSubmission,
+  getCategories,
+  updateImageSubmission,
+} from "@/lib/firestore";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { MiniMapPopup } from "./MiniMapPopup";
 
@@ -197,6 +201,9 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           authorName:
             `${formData.author.firstName} ${formData.author.lastName}`.trim(),
         },
+        ...(role.toLowerCase() === "admin" && {
+          status: formData.status,
+        }),
         imageUrl,
         thumbnailUrl,
         markerUrl,
@@ -205,8 +212,12 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
 
       if (marker) {
         // TODO: Update existing marker
-        console.log("Update marker:", imageData);
-        alert("Update functionality coming soon!");
+        const success = await updateImageSubmission(marker.id, imageData);
+
+        if (!success) {
+          throw new Error("Failed to update marker");
+        }
+        alert("Marker updated successfully!");
       } else {
         // Create new marker
         const newId = await createImageSubmission(imageData);
@@ -428,51 +439,53 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             </div>
 
             {/* Images */}
-            <div>
-              <label className="block font-medium text-sm">Images</label>
+            {!marker && (
+              <div>
+                <label className="block font-medium text-sm">Images</label>
 
-              {formData.images.length === 0 && (
-                <label className="w-full flex justify-center items-center border border-gray-300 rounded px-3 py-2 cursor-pointer hover:bg-gray-100">
-                  Click here to upload images
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImagesChange}
-                    className="hidden"
-                  />
-                </label>
-              )}
+                {formData.images.length === 0 && (
+                  <label className="w-full flex justify-center items-center border border-gray-300 rounded px-3 py-2 cursor-pointer hover:bg-gray-100">
+                    Click here to upload images
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImagesChange}
+                      className="hidden"
+                    />
+                  </label>
+                )}
 
-              {formData.images.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.images.map((img, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded max-w-full"
-                    >
-                      <span className="text-sm truncate max-w-[220px] sm:max-w-[320px]">
-                        {typeof img === "string" ? img : img?.filename}
-                      </span>
-
-                      <button
-                        type="button"
-                        className="text-red-500 font-bold hover:text-red-700"
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            images: prev.images.filter((_, i) => i !== idx),
-                          }))
-                        }
-                        aria-label="Remove image"
+                {formData.images.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.images.map((img, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded max-w-full"
                       >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                        <span className="text-sm truncate max-w-[220px] sm:max-w-[320px]">
+                          {typeof img === "string" ? img : img?.filename}
+                        </span>
+
+                        <button
+                          type="button"
+                          className="text-red-500 font-bold hover:text-red-700"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              images: prev.images.filter((_, i) => i !== idx),
+                            }))
+                          }
+                          aria-label="Remove image"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <button
               type="submit"
