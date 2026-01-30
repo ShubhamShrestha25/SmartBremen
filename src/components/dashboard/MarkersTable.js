@@ -15,7 +15,7 @@ import { updateImageStatus, deleteImage } from "@/lib/firestore";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
-const Markers = ({ markersData, categories = [], onRefresh }) => {
+const Markers = ({ markersData, categories, onRefresh, userProfile }) => {
   const [current, setCurrent] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -122,9 +122,12 @@ const Markers = ({ markersData, categories = [], onRefresh }) => {
         <h1 className="text-lg font-semibold text-gray-800 lg:text-2xl">
           Markers
         </h1>
-        <button onClick={() => setShowModal(true)}>
-          <MdAddCircle className="text-3xl" />
-        </button>
+
+        {(userProfile?.uploadEnabled || role.toLowerCase() === "admin") && (
+          <button onClick={() => setShowModal(true)}>
+            <MdAddCircle className="text-3xl" />
+          </button>
+        )}
       </div>
 
       <div className="overflow-x-auto custom-scrollbar">
