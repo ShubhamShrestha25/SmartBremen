@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import AuthProvider from "@/components/AuthProvider";
 import "./globals.css";
 import { Manrope } from "next/font/google";
 
@@ -15,8 +16,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={manrope.className}>
       <body>
-        <Header />
-        {children}
+        <AuthProvider>
+          <Header />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import useAuthStore from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -7,11 +9,17 @@ import { IoMdLogOut } from "react-icons/io";
 
 const LogoutBtn = () => {
   const router = useRouter();
-  const { setRole } = useAuthStore();
+  const { setRole, setUserId } = useAuthStore();
 
-  const logoutHandler = () => {
-    setRole(null);
-    router.push("/");
+  const logoutHandler = async () => {
+    try {
+      await signOut(auth);
+      setRole(null);
+      setUserId(null);
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
   return (
     <button
