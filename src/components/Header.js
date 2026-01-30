@@ -13,7 +13,7 @@ const Header = () => {
     pathname === "/auth/login" || pathname === "/auth/register";
 
   return (
-    <nav className="sticky top-0 z-50 flex h-[60px] items-center justify-center bg-white lg:h-[80px]">
+    <nav className="sticky top-0 z-50 flex h-[60px] items-center justify-center bg-white lg:h-20">
       <div className="mainContainer flex items-center justify-between">
         <Link href="/" className="w-[120px] lg:w-[155px]">
           <Image
