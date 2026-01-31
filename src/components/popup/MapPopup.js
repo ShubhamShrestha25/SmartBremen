@@ -10,7 +10,7 @@ const MapPopup = ({ marker, category }) => {
   // Build images array from marker data - Slider expects array of URL strings
   const images =
     marker?.images?.length > 0
-      ? marker.images.map((img) => img?.url || img).filter(Boolean)
+           ? marker.images.map((img) => img?.imageUrl || img?.url || img).filter(Boolean)
       : marker?.imageUrl
         ? [marker.imageUrl]
         : ["/images/marker-popup-default.png"];
