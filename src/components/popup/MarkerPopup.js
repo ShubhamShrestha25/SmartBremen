@@ -1,6 +1,9 @@
-import { categoryData } from "@/data/categoryData";
 import { useEffect, useState } from "react";
-import { createImageSubmission, getCategories } from "@/lib/firestore";
+import {
+  createImageSubmission,
+  getCategories,
+  updateImageSubmission,
+} from "@/lib/firestore";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { MiniMapPopup } from "./MiniMapPopup";
 
@@ -14,6 +17,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [firestoreCategories, setFirestoreCategories] = useState([]);
+  const [availableSubcategories, setAvailableSubcategories] = useState([]);
   const { role, userId } = useAuthStore();
 
   // Fetch categories from Firestore
@@ -39,6 +43,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             marker.category?.informalityCategoryId ||
             marker._original?.categoryId ||
             "",
+          subcategoryId: marker._original?.subcategoryId || "",
           description: marker.description || "",
           images: marker.images || [],
           imageFiles: [],
@@ -48,6 +53,14 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             lastName: marker.author?.lastName || "",
           },
         });
+        // Set available subcategories for existing marker
+        const catId =
+          marker.category?.informalityCategoryId ||
+          marker._original?.categoryId;
+        if (catId) {
+          const cat = firestoreCategories.find((c) => c.id === catId);
+          setAvailableSubcategories(cat?.subcategories || []);
+        }
       } else {
         setFormData({
           title: "",
@@ -56,6 +69,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           lng: "8.8017",
           category: "",
           categoryId: "",
+          subcategoryId: "",
           description: "",
           images: [],
           imageFiles: [],
@@ -65,6 +79,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             lastName: "",
           },
         });
+        setAvailableSubcategories([]);
       }
     };
 
@@ -93,10 +108,23 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
     const firestoreCat = firestoreCategories.find(
       (c) => c.name === selectedName,
     );
+
     setFormData((prev) => ({
       ...prev,
       category: selectedName,
       categoryId: firestoreCat?.id || "",
+      subcategoryId: "", // Reset subcategory when category changes
+    }));
+
+    // Update available subcategories
+    const subcats = firestoreCat?.subcategories || [];
+    setAvailableSubcategories(subcats);
+  };
+
+  const handleSubcategoryChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      subcategoryId: e.target.value,
     }));
   };
 
@@ -139,9 +167,13 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
           const categoryName =
             firestoreCategories.find((c) => c.id === formData.categoryId)
               ?.name || "general";
+          const subcategoryName =
+            availableSubcategories.find((s) => s.id === formData.subcategoryId)
+              ?.name || null;
           const uploadResult = await uploadToCloudinary(
             formData.imageFiles[0],
             categoryName,
+            subcategoryName,
           );
           imageUrl = uploadResult.imageUrl;
           thumbnailUrl = uploadResult.thumbnailUrl;
@@ -162,12 +194,16 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
         lat: parseFloat(formData.lat),
         lng: parseFloat(formData.lng),
         categoryId: formData.categoryId,
+        subcategoryId: formData.subcategoryId || null,
         artistId: userId,
         metadata: {
           locationName: formData.location || "",
           authorName:
             `${formData.author.firstName} ${formData.author.lastName}`.trim(),
         },
+        ...(role.toLowerCase() === "admin" && {
+          status: formData.status,
+        }),
         imageUrl,
         thumbnailUrl,
         markerUrl,
@@ -176,8 +212,12 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
 
       if (marker) {
         // TODO: Update existing marker
-        console.log("Update marker:", imageData);
-        alert("Update functionality coming soon!");
+        const success = await updateImageSubmission(marker.id, imageData);
+
+        if (!success) {
+          throw new Error("Failed to update marker");
+        }
+        alert("Marker updated successfully!");
       } else {
         // Create new marker
         const newId = await createImageSubmission(imageData);
@@ -311,16 +351,38 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
                 <option value="" disabled>
                   Select Category
                 </option>
-                {categoryData.map((cat) => (
-                  <option key={cat.id} value={cat.title}>
-                    {cat.title}
+                {firestoreCategories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
                   </option>
                 ))}
               </select>
             </div>
 
+            {/* Subcategory - only show if category has subcategories */}
+            {availableSubcategories.length > 0 && (
+              <div>
+                <label className="block font-medium mb-1 text-sm">
+                  Subcategory
+                </label>
+                <select
+                  name="subcategoryId"
+                  value={formData.subcategoryId || ""}
+                  onChange={handleSubcategoryChange}
+                  className="w-full border px-3 py-2 rounded text-sm"
+                >
+                  <option value="">Select Subcategory (optional)</option>
+                  {availableSubcategories.map((sub) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             {/* Status */}
-            {role.toLowerCase() === "admin" && (
+            {role.toLowerCase() === "admin" && marker && (
               <div>
                 <label className="block font-medium mb-1 text-sm">
                   Status *
@@ -377,51 +439,53 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             </div>
 
             {/* Images */}
-            <div>
-              <label className="block font-medium text-sm">Images</label>
+            {!marker && (
+              <div>
+                <label className="block font-medium text-sm">Images</label>
 
-              {formData.images.length === 0 && (
-                <label className="w-full flex justify-center items-center border border-gray-300 rounded px-3 py-2 cursor-pointer hover:bg-gray-100">
-                  Click here to upload images
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImagesChange}
-                    className="hidden"
-                  />
-                </label>
-              )}
+                {formData.images.length === 0 && (
+                  <label className="w-full flex justify-center items-center border border-gray-300 rounded px-3 py-2 cursor-pointer hover:bg-gray-100">
+                    Click here to upload images
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImagesChange}
+                      className="hidden"
+                    />
+                  </label>
+                )}
 
-              {formData.images.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.images.map((img, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded max-w-full"
-                    >
-                      <span className="text-sm truncate max-w-[220px] sm:max-w-[320px]">
-                        {typeof img === "string" ? img : img?.filename}
-                      </span>
-
-                      <button
-                        type="button"
-                        className="text-red-500 font-bold hover:text-red-700"
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            images: prev.images.filter((_, i) => i !== idx),
-                          }))
-                        }
-                        aria-label="Remove image"
+                {formData.images.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.images.map((img, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded max-w-full"
                       >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                        <span className="text-sm truncate max-w-[220px] sm:max-w-[320px]">
+                          {typeof img === "string" ? img : img?.filename}
+                        </span>
+
+                        <button
+                          type="button"
+                          className="text-red-500 font-bold hover:text-red-700"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              images: prev.images.filter((_, i) => i !== idx),
+                            }))
+                          }
+                          aria-label="Remove image"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <button
               type="submit"
@@ -436,16 +500,13 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
         {showMiniMap && (
           <MiniMapPopup
             setShowMiniMap={setShowMiniMap}
-            lat={formData.location.lat}
-            lng={formData.location.lng}
+            lat={formData.lat}
+            lng={formData.lng}
             onChange={({ lat, lng }) =>
               setFormData((prev) => ({
                 ...prev,
-                location: {
-                  ...prev.location,
-                  lat: lat.toFixed(6),
-                  lng: lng.toFixed(6),
-                },
+                lat: lat.toFixed(4),
+                lng: lng.toFixed(4),
               }))
             }
           />

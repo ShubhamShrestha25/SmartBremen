@@ -1,12 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoToggle, IoToggleOutline } from "react-icons/io5";
 import { updateUserProfile } from "@/lib/firestore";
+import Pagination from "@/components/Pagination";
 
 const Users = ({ usersData = [], onRefresh }) => {
   const [actionLoading, setActionLoading] = useState(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Calculate paginated data
+  const totalItems = usersData?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return usersData?.slice(startIndex, startIndex + itemsPerPage) || [];
+  }, [usersData, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when items per page changes
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
 
   // Toggle upload enabled status
   const handleToggleUpload = async (user) => {
@@ -77,7 +96,7 @@ const Users = ({ usersData = [], onRefresh }) => {
                 </td>
               </tr>
             ) : (
-              usersData.map((user) => (
+              paginatedUsers.map((user) => (
                 <tr key={user.uid} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-xs font-medium text-gray-800 whitespace-nowrap md:text-sm">
                     {user.name || "Unnamed"}
@@ -146,20 +165,15 @@ const Users = ({ usersData = [], onRefresh }) => {
       <p className="mt-3 text-center text-sm sm:hidden">
         Swipe left or right to view the table 👉📱
       </p>
-      {/* Pagination */}
-      <div className="space-x-2 my-4 text-center">
-        <button className="px-3 py-1 text-sm border rounded border-[#6BEE32]">
-          1
-        </button>
 
-        <button className="px-3 py-1 text-sm border rounded border-gray-300 hover:bg-gray-100">
-          2
-        </button>
-
-        <button className="px-3 py-1 text-sm border rounded border-gray-300 hover:bg-gray-100">
-          3
-        </button>
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
+        totalItems={totalItems}
+      />
     </div>
   );
 };

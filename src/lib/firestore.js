@@ -171,6 +171,29 @@ export const getAllUsers = async () => {
 // ============================================
 
 /**
+ * Update an image
+ */
+export const updateImageSubmission = async (imageId, data) => {
+  try {
+    const imageRef = doc(db, COLLECTIONS.IMAGES, imageId);
+
+    // Optional: prevent accidental writes of undefined
+    const cleaned = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== undefined)
+    );
+
+    await updateDoc(imageRef, {
+      ...cleaned,
+      updatedAt: serverTimestamp(),
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Error updating image submission:", error);
+    return false;
+  }
+};
+/**
  * Update image status (approve/reject)
  */
 export const updateImageStatus = async (imageId, status, approvedBy = null) => {
@@ -270,6 +293,10 @@ export const transformImageToMarker = (image, categories = [], users = []) => {
   const category = categories.find((c) => c.id === image.categoryId);
   const author = users.find((u) => u.uid === image.artistId);
 
+  // Get author name: prefer metadata.authorName, then user profile name
+  const authorName = image.metadata?.authorName || author?.name || "Unknown";
+  const [authorFirstName, ...authorLastNameParts] = authorName.split(" ");
+
   return {
     id: image.id,
     title: image.title || "Untitled",
@@ -282,8 +309,8 @@ export const transformImageToMarker = (image, categories = [], users = []) => {
     },
     author: {
       authorId: image.artistId,
-      firstName: author?.name?.split(" ")[0] || "Unknown",
-      lastName: author?.name?.split(" ").slice(1).join(" ") || "",
+      firstName: authorFirstName || "Unknown",
+      lastName: authorLastNameParts.join(" ") || "",
       email: author?.email || "",
     },
     location: {

@@ -84,6 +84,7 @@ export default function AdminDashboard() {
                 markersData={markersData}
                 categories={categories}
                 onRefresh={handleRefresh}
+                userProfile={usersData}
               />
             )}
             {activeTable === "categories" && (

@@ -1,19 +1,51 @@
 "use client";
 
+import { getUserProfile } from "@/lib/firestore";
 import useAuthStore from "@/store/useAuthStore";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Header = () => {
   const pathname = usePathname();
-  const { role } = useAuthStore();
+  const { role, userId } = useAuthStore();
+
+  const [userProfile, setUserProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const isAuthActive =
     pathname === "/auth/login" || pathname === "/auth/register";
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userId) return;
+
+      setLoading(true);
+      try {
+        const profile = await getUserProfile(userId);
+        setUserProfile(profile);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+  const getInitials = userProfile?.name
+    ?.trim()
+    .split(/\s+/)
+    .map((word) => word[0])
+    .filter(Boolean)
+    .filter((_, index, arr) => index === 0 || index === arr.length - 1)
+    .join("")
+    .toUpperCase();
+
   return (
-    <nav className="sticky top-0 z-50 flex h-[60px] items-center justify-center bg-white lg:h-[80px]">
+    <nav className="sticky top-0 z-50 flex h-[60px] items-center justify-center bg-white lg:h-20">
       <div className="mainContainer flex items-center justify-between">
         <Link href="/" className="w-[120px] lg:w-[155px]">
           <Image
@@ -60,9 +92,15 @@ const Header = () => {
 
           {role && (
             <Link href="/auth/dashboard" aria-label="Open dashboard">
-              <div className="flex h-6 w-6 items-center justify-center rounded-full border border-[#FF4B4B] text-xs font-bold lg:h-8 lg:w-8 lg:text-sm">
-                JD
-              </div>
+              {loading ? (
+                <div className="flex h-6 w-6 items-center justify-center rounded-full border border-[#FF4B4B] text-xs font-bold lg:h-8 lg:w-8 lg:text-sm">
+                  XX
+                </div>
+              ) : (
+                <div className="flex h-6 w-6 items-center justify-center rounded-full border border-[#FF4B4B] text-xs font-bold lg:h-8 lg:w-8 lg:text-sm">
+                  {getInitials}
+                </div>
+              )}
             </Link>
           )}
         </div>

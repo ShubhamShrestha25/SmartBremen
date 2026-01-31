@@ -22,15 +22,19 @@ function sanitizeFolderName(name) {
  * Upload a file to Cloudinary
  * @param {File} file - The file to upload
  * @param {string} category - Category name for folder organization
+ * @param {string} subcategory - Subcategory name for folder organization (optional)
  * @returns {Promise<{imageUrl: string, thumbnailUrl: string, markerUrl: string}>}
  */
-export async function uploadToCloudinary(file, category = 'general') {
+export async function uploadToCloudinary(file, category = 'general', subcategory = null) {
   const sanitizedCategory = sanitizeFolderName(category);
+  const folder = subcategory 
+    ? `smartbremen/${sanitizedCategory}/${sanitizeFolderName(subcategory)}`
+    : `smartbremen/${sanitizedCategory}`;
   
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-  formData.append('folder', `smartbremen/${sanitizedCategory}`);
+  formData.append('folder', folder);
 
   // Determine resource type based on file type
   const isVideo = file.type.startsWith('video/');
