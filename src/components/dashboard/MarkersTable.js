@@ -30,13 +30,13 @@ const Markers = ({ markersData, categories, onRefresh, userProfile }) => {
 
   // Helper to get subcategory name
   const getSubcategoryName = (marker) => {
-    if (!marker?._original?.subcategoryId) return null;
+    if (!marker?.category?.subcategoryId) return null;
     const categoryId =
-      marker?.category?.informalityCategoryId || marker?._original?.categoryId;
+      marker?.category?.informalityCategoryId || marker?.categoryId;
     const category = categories.find((c) => c.id === categoryId);
     if (!category?.subcategories) return null;
     const subcategory = category.subcategories.find(
-      (sub) => sub.id === marker._original.subcategoryId,
+      (sub) => sub.id === marker?.category.subcategoryId,
     );
     return subcategory?.name || null;
   };
@@ -58,7 +58,7 @@ const Markers = ({ markersData, categories, onRefresh, userProfile }) => {
   // Used by the lightbox to display images in fullscreen
   const slides = useMemo(() => {
     return (selectedMarker?.images ?? [])
-      .map((img) => img?.url)
+      .map((img) => img?.imageUrl)
       .filter(Boolean)
       .map((url) => ({ src: url }));
   }, [selectedMarker]);
@@ -174,8 +174,8 @@ const Markers = ({ markersData, categories, onRefresh, userProfile }) => {
                   >
                     <Image
                       src={
-                        marker?.images?.[0]?.url ||
-                        marker?._original?.thumbnailUrl ||
+                        marker?.images?.[0]?.markerUrl ||
+                        marker?.thumbnailUrl ||
                         "/images/marker-popup-default.png"
                       }
                       alt={marker?.title || "Marker"}
@@ -183,9 +183,9 @@ const Markers = ({ markersData, categories, onRefresh, userProfile }) => {
                       height={60}
                       className="w-full h-full rounded-xl object-cover"
                     />
-                    {marker?.images.length > 1 && (
+                    {marker?.images?.length > 1 && (
                       <div className="absolute -top-2.5 -right-2.5 flex justify-center items-center w-6 h-6 bg-black text-white rounded-full text-sm">
-                        +{marker?.images.length - 1}
+                        +{marker?.images?.length - 1}
                       </div>
                     )}
                   </div>

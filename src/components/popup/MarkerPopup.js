@@ -36,14 +36,11 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
         setFormData({
           title: marker.title || "",
           location: marker.location?.name || "",
-          lat: marker.location?.lat || marker._original?.lat || "",
-          lng: marker.location?.lng || marker._original?.lng || "",
+          lat: marker.location?.lat || "",
+          lng: marker.location?.lng || "",
           category: marker.category?.name || "",
-          categoryId:
-            marker.category?.informalityCategoryId ||
-            marker._original?.categoryId ||
-            "",
-          subcategoryId: marker._original?.subcategoryId || "",
+          categoryId: marker.category?.informalityCategoryId || "",
+          subcategoryId: marker.category.subcategoryId || "",
           description: marker.description || "",
           images: marker.images || [],
           imageFiles: [],
@@ -52,11 +49,14 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
             firstName: marker.author?.firstName || "",
             lastName: marker.author?.lastName || "",
           },
+          images: marker.images || [],
+          imageUrl: marker.imageUrl || "",
+          thumbnailUrl: marker.thumbnailUrl || "",
+          markerUrl: marker.markerUrl || "",
+          mediaType: marker.mediaType || "",
         });
         // Set available subcategories for existing marker
-        const catId =
-          marker.category?.informalityCategoryId ||
-          marker._original?.categoryId;
+        const catId = marker.category?.informalityCategoryId;
         if (catId) {
           const cat = firestoreCategories.find((c) => c.id === catId);
           setAvailableSubcategories(cat?.subcategories || []);
@@ -85,7 +85,7 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
 
     initializeForm();
     setError("");
-  }, [marker, show]);
+  }, [marker, show, firestoreCategories]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -129,11 +129,13 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
   };
 
   const handleImagesChange = (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
     setFormData((prev) => ({
       ...prev,
-      images: files.map((f) => f.name),
-      imageFiles: files,
+      images: [...prev.images, ...files.map((f) => f.name)],
+      imageFiles: [...prev.imageFiles, ...files],
     }));
   };
 
@@ -156,80 +158,80 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
         return;
       }
 
-      // Upload image to Cloudinary if file selected
-      let imageUrl = marker?._original?.imageUrl || "/images/marker-popup-default.png";
-      let thumbnailUrl = marker?._original?.thumbnailUrl || "/images/marker-popup-default.png";
-      let markerUrl = marker?._original?.markerUrl || "/images/marker-popup-default.png";
-      let mediaType = marker?._original?.mediaType || "image";
+      if (formData?.images?.length === 0) {
+        setError("Please select a image");
+        setLoading(false);
+        return;
+      }
 
-      // Handle multiple images (imageUrls array)
-      let imageUrls = marker?._original?.imageUrls || null;
-      let thumbnailUrls = marker?._original?.thumbnailUrls || null;
-      let markerUrls = marker?._original?.markerUrls || null;
+      // Upload image to Cloudinary if file selected
+      let images = [];
+      let imageUrl = "/images/marker-popup-default.png";
+      let thumbnailUrl = "/images/marker-popup-default.png";
+      let markerUrl = "/images/marker-popup-default.png";
+      let mediaType = "image";
 
       if (formData.imageFiles && formData.imageFiles.length > 0) {
         try {
           const categoryName =
             firestoreCategories.find((c) => c.id === formData.categoryId)
               ?.name || "general";
+
           const subcategoryName =
             availableSubcategories.find((s) => s.id === formData.subcategoryId)
               ?.name || null;
-          const uploadResult = await uploadToCloudinary(
-            formData.imageFiles[0],
-            categoryName,
-            subcategoryName,
+
+          const uploadResults = await Promise.all(
+            formData.imageFiles.map((file) =>
+              uploadToCloudinary(file, categoryName, subcategoryName),
+            ),
           );
-          imageUrl = uploadResult.imageUrl;
-          thumbnailUrl = uploadResult.thumbnailUrl;
-          markerUrl = uploadResult.markerUrl;
-          mediaType = uploadResult.mediaType || "image";
+
+          images = uploadResults.map((r, index) => ({
+            imageUrl: r.imageUrl,
+            thumbnailUrl: r.thumbnailUrl ?? r.imageUrl,
+            markerUrl: r.markerUrl ?? r.imageUrl,
+            mediaType: "image",
+            order: index,
+          }));
+
+          const first = uploadResults[0];
+          if (first) {
+            imageUrl = first.imageUrl;
+            thumbnailUrl = first.thumbnailUrl;
+            markerUrl = first.markerUrl;
+            mediaType = first.mediaType || "image";
+          }
         } catch (uploadError) {
           console.error("Cloudinary upload failed:", uploadError);
-          setError("Failed to upload image. Please try again.");
+          setError("Failed to upload image(s). Please try again.");
           setLoading(false);
           return;
         }
       }
 
       // Create the image submission data
-      const lat = parseFloat(formData.lat);
-      const lng = parseFloat(formData.lng);
-      
-      // Validate lat/lng are valid numbers
-      if (isNaN(lat) || isNaN(lng)) {
-        setError("Invalid coordinates. Please check latitude and longitude.");
-        setLoading(false);
-        return;
-      }
-
       const imageData = {
         title: formData.title,
         description: formData.description || "",
-        lat,
-        lng,
+        lat: parseFloat(formData.lat),
+        lng: parseFloat(formData.lng),
         categoryId: formData.categoryId,
         subcategoryId: formData.subcategoryId || null,
-        artistId: marker?._original?.artistId || userId,
+        artistId: userId,
         metadata: {
           locationName: formData.location || "",
           authorName:
             `${formData.author.firstName} ${formData.author.lastName}`.trim(),
         },
-        // Always use lowercase status for Firestore queries
-        status: role.toLowerCase() === "admin" 
-          ? formData.status.toLowerCase() 
-          : (marker?._original?.status || marker?.status?.toLowerCase() || "pending"),
-        imageUrl,
-        thumbnailUrl,
-        markerUrl,
-        mediaType,
-        // Preserve multiple images if they exist
-        ...(imageUrls && { imageUrls }),
-        ...(thumbnailUrls && { thumbnailUrls }),
-        ...(markerUrls && { markerUrls }),
-        // Preserve createdAt timestamp
-        ...(marker?._original?.createdAt && { createdAt: marker._original.createdAt }),
+        ...(role.toLowerCase() === "admin" && {
+          status: formData.status,
+        }),
+        images: marker ? formData.images : images,
+        imageUrl: formData.imageUrl || imageUrl,
+        thumbnailUrl: formData.thumbnailUrl || thumbnailUrl,
+        markerUrl: formData.markerUrl || markerUrl,
+        mediaType: formData.mediaType || mediaType,
       };
 
       if (marker) {
@@ -358,49 +360,56 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
               </button>
             </div>
 
-            {/* Category */}
-            <div>
-              <label className="block font-medium mb-1 text-sm">
-                Category *
-              </label>
-              <select
-                name="category"
-                value={formData.category || ""}
-                onChange={handleCategoryChange}
-                className="w-full border px-3 py-2 rounded text-sm"
-                required
-              >
-                <option value="" disabled>
-                  Select Category
-                </option>
-                {firestoreCategories.map((cat) => (
-                  <option key={cat.id} value={cat.name}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Subcategory - only show if category has subcategories */}
-            {availableSubcategories.length > 0 && (
-              <div>
-                <label className="block font-medium mb-1 text-sm">
-                  Subcategory
-                </label>
-                <select
-                  name="subcategoryId"
-                  value={formData.subcategoryId || ""}
-                  onChange={handleSubcategoryChange}
-                  className="w-full border px-3 py-2 rounded text-sm"
-                >
-                  <option value="">Select Subcategory (optional)</option>
-                  {availableSubcategories.map((sub, index) => (
-                    <option key={sub.id || sub.name || index} value={sub.id || sub.name}>
-                      {sub.name}
+            {!marker && (
+              <>
+                {/* Category */}
+                <div>
+                  <label className="block font-medium mb-1 text-sm">
+                    Category *
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category || ""}
+                    onChange={handleCategoryChange}
+                    className="w-full border px-3 py-2 rounded text-sm"
+                    required
+                  >
+                    <option value="" disabled>
+                      Select Category
                     </option>
-                  ))}
-                </select>
-              </div>
+                    {firestoreCategories.map((cat) => (
+                      <option key={cat.id} value={cat.name}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Subcategory - only show if category has subcategories */}
+                {availableSubcategories.length > 0 && (
+                  <div>
+                    <label className="block font-medium mb-1 text-sm">
+                      Subcategory
+                    </label>
+                    <select
+                      name="subcategoryId"
+                      value={formData.subcategoryId || ""}
+                      onChange={handleSubcategoryChange}
+                      className="w-full border px-3 py-2 rounded text-sm"
+                    >
+                      <option value="">Select Subcategory (optional)</option>
+                      {availableSubcategories.map((sub, index) => (
+                        <option
+                          key={sub.id || sub.name || index}
+                          value={sub.id || sub.name}
+                        >
+                          {sub.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Status */}
@@ -416,9 +425,9 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
                   className="w-full border px-3 py-2 rounded text-sm"
                   required
                 >
-                  <option value="Pending">Pending</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Rejected">Rejected</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
                 </select>
               </div>
             )}
@@ -496,6 +505,9 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
                             setFormData((prev) => ({
                               ...prev,
                               images: prev.images.filter((_, i) => i !== idx),
+                              imageFiles: prev.imageFiles.filter(
+                                (_, i) => i !== idx,
+                              ),
                             }))
                           }
                           aria-label="Remove image"

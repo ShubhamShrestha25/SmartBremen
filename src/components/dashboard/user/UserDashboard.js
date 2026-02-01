@@ -38,10 +38,11 @@ export default function UserDashboard() {
           title: img.title || "Untitled",
           description: img.description || "",
           status:
-            img.status?.charAt(0).toUpperCase() + img.status?.slice(1) ||
-            "Pending",
+            img.status?.charAt(0).tolowerCase() + img.status?.slice(1) ||
+            "pending",
           category: {
             informalityCategoryId: img.categoryId,
+            subcategoryId: img.subcategoryId || "",
             name: category?.name || "Unknown",
             color: category?.color || "#4A4A4A",
           },
@@ -55,15 +56,12 @@ export default function UserDashboard() {
             lng: img.lng,
             name: img.metadata?.locationName || "",
           },
-          images: [
-            {
-              imageId: `${img.id}-main`,
-              url: img.imageUrl,
-              thumbnailUrl: img.thumbnailUrl,
-            },
-          ],
+          images: img.images || "",
+          imageUrl: img.imageUrl || "",
+          thumbnailUrl: img.thumbnailUrl || "",
+          markerUrl: img.markerUrl || "",
+          mediaType: img.mediaType || "",
           createdAt: img.createdAt,
-          _original: img,
         };
       });
 

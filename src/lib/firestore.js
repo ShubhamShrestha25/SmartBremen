@@ -68,7 +68,7 @@ export const getApprovedImages = async () => {
     const q = query(
       collection(db, COLLECTIONS.IMAGES),
       where("status", "==", "approved"),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
     );
     const snapshot = await getDocs(q);
 
@@ -94,7 +94,7 @@ export const getImagesByArtist = async (artistId) => {
   try {
     const q = query(
       collection(db, COLLECTIONS.IMAGES),
-      where("artistId", "==", artistId)
+      where("artistId", "==", artistId),
     );
     const snapshot = await getDocs(q);
 
@@ -123,7 +123,7 @@ export const getAllImages = async () => {
   try {
     const q = query(
       collection(db, COLLECTIONS.IMAGES),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
     );
     const snapshot = await getDocs(q);
 
@@ -149,7 +149,7 @@ export const getAllUsers = async () => {
   try {
     const q = query(
       collection(db, COLLECTIONS.USERS),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
     );
     const snapshot = await getDocs(q);
 
@@ -180,7 +180,7 @@ export const updateImageSubmission = async (imageId, data) => {
 
     // Optional: prevent accidental writes of undefined
     const cleaned = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== undefined)
+      Object.entries(data).filter(([, v]) => v !== undefined),
     );
 
     await updateDoc(imageRef, {
@@ -222,55 +222,51 @@ export const updateImageStatus = async (imageId, status, approvedBy = null) => {
  */
 export const deleteImage = async (imageId, deleteFromCloud = true) => {
   try {
-    // Get the image data first to extract Cloudinary URLs
     if (deleteFromCloud) {
       const imageDoc = await getDoc(doc(db, COLLECTIONS.IMAGES, imageId));
-      
+
       if (imageDoc.exists()) {
         const imageData = imageDoc.data();
         const urlsToDelete = [];
-        
-        // Collect all Cloudinary URLs (single or multiple images)
-        if (imageData.imageUrl) {
-          urlsToDelete.push(imageData.imageUrl);
+
+        // Flat fields (single image)
+        if (imageData.imageUrl) urlsToDelete.push(imageData.imageUrl);
+        if (imageData.thumbnailUrl) urlsToDelete.push(imageData.thumbnailUrl);
+        if (imageData.markerUrl) urlsToDelete.push(imageData.markerUrl);
+
+        // ✅ NEW: images: [{ imageUrl, thumbnailUrl, markerUrl, ... }]
+        if (Array.isArray(imageData.images)) {
+          for (const item of imageData.images) {
+            if (!item) continue;
+            if (item.imageUrl) urlsToDelete.push(item.imageUrl);
+            if (item.thumbnailUrl) urlsToDelete.push(item.thumbnailUrl);
+            if (item.markerUrl) urlsToDelete.push(item.markerUrl);
+          }
         }
-        if (imageData.thumbnailUrl) {
-          urlsToDelete.push(imageData.thumbnailUrl);
-        }
-        if (imageData.markerUrl) {
-          urlsToDelete.push(imageData.markerUrl);
-        }
-        
-        // Handle multiple images (imageUrls array)
-        if (Array.isArray(imageData.imageUrls)) {
-          urlsToDelete.push(...imageData.imageUrls);
-        }
-        if (Array.isArray(imageData.thumbnailUrls)) {
-          urlsToDelete.push(...imageData.thumbnailUrls);
-        }
-        if (Array.isArray(imageData.markerUrls)) {
-          urlsToDelete.push(...imageData.markerUrls);
-        }
-        
-        // Filter to only Cloudinary URLs
-        const cloudinaryUrls = urlsToDelete.filter(url => 
-          url && url.includes('cloudinary.com')
-        );
-        
+
+        // Filter to Cloudinary only + dedupe
+        const cloudinaryUrls = [
+          ...new Set(
+            urlsToDelete.filter(
+              (url) =>
+                typeof url === "string" && url.includes("cloudinary.com"),
+            ),
+          ),
+        ];
+
         if (cloudinaryUrls.length > 0) {
           try {
-            const { deleteFromCloudinary } = await import('./cloudinary.js');
+            const { deleteFromCloudinary } = await import("./cloudinary.js");
             const result = await deleteFromCloudinary(cloudinaryUrls);
-            console.log('Cloudinary deletion result:', result);
+            console.log("Cloudinary deletion result:", result);
           } catch (cloudError) {
-            console.error('Error deleting from Cloudinary:', cloudError);
-            // Continue with Firestore deletion even if Cloudinary fails
+            console.error("Error deleting from Cloudinary:", cloudError);
+            // continue with Firestore deletion even if Cloudinary fails
           }
         }
       }
     }
-    
-    // Delete from Firestore
+
     await deleteDoc(doc(db, COLLECTIONS.IMAGES, imageId));
     return true;
   } catch (error) {
@@ -353,9 +349,12 @@ export const transformImageToMarker = (image, categories = [], users = []) => {
     id: image.id,
     title: image.title || "Untitled",
     description: image.description || "",
-    status: image.status?.charAt(0).toUpperCase() + image.status?.slice(1) || "Pending",
+    status:
+      image.status?.charAt(0).toLowerCase() + image.status?.slice(1) ||
+      "pending",
     category: {
       informalityCategoryId: image.categoryId,
+      subcategoryId: image.subcategoryId || "",
       name: category?.name || "Unknown",
       color: category?.color || "#4A4A4A",
     },
@@ -370,18 +369,14 @@ export const transformImageToMarker = (image, categories = [], users = []) => {
       lng: image.lng,
       name: image.metadata?.locationName || "",
     },
-    images: [
-      {
-        imageId: `${image.id}-main`,
-        url: image.imageUrl,
-        thumbnailUrl: image.thumbnailUrl,
-        markerUrl: image.markerUrl,
-      },
-    ],
+
+    images: image.images || "",
+    imageUrl: image.imageUrl || "",
+    thumbnailUrl: image.thumbnailUrl || "",
+    markerUrl: image.markerUrl || "",
+    mediaType: image.mediaType || "",
     createdAt: image.createdAt,
     approvedAt: image.approvedAt,
-    // Keep original fields for reference
-    _original: image,
   };
 };
 
@@ -411,7 +406,7 @@ const getImagesByStatus = async (status) => {
     const q = query(
       collection(db, COLLECTIONS.IMAGES),
       where("status", "==", status),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
     );
     const snapshot = await getDocs(q);
 
@@ -437,10 +432,10 @@ const sanitizeCategoryId = (name) => {
   return name
     .trim()
     .toLowerCase()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 };
 
 /**
@@ -451,56 +446,64 @@ const sanitizeCategoryId = (name) => {
  */
 export const createCategory = async (categoryData) => {
   try {
-    const { name, color, iconUrl, description, subcategories = [] } = categoryData;
-    
+    const {
+      name,
+      color,
+      iconUrl,
+      description,
+      subcategories = [],
+    } = categoryData;
+
     // Use sanitized category name as document ID
     const categoryId = sanitizeCategoryId(name);
-    
+
     // Check if category already exists
-    const existingDoc = await getDoc(doc(db, COLLECTIONS.CATEGORIES, categoryId));
+    const existingDoc = await getDoc(
+      doc(db, COLLECTIONS.CATEGORIES, categoryId),
+    );
     if (existingDoc.exists()) {
       throw new Error(`Category "${name}" already exists`);
     }
-    
+
     // Create category document with name as ID
     const categoryRef = doc(db, COLLECTIONS.CATEGORIES, categoryId);
     await setDoc(categoryRef, {
       name: name.trim(),
-      color: color || '#3498db',
-      iconUrl: iconUrl || '',
-      description: description || '',
-      subcategories: subcategories.map(sub => ({
+      color: color || "#3498db",
+      iconUrl: iconUrl || "",
+      description: description || "",
+      subcategories: subcategories.map((sub) => ({
         id: sanitizeCategoryId(sub.name), // Generate ID from subcategory name
         name: sub.name.trim(),
-        description: sub.description || ''
+        description: sub.description || "",
       })),
       createdAt: serverTimestamp(),
     });
-    
+
     // Create Cloudinary folders
     try {
       // Create main category folder
-      await fetch('/api/cloudinary/folder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: name })
+      await fetch("/api/cloudinary/folder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: name }),
       });
-      
+
       // Create subcategory folders
       for (const sub of subcategories) {
         if (sub.name.trim()) {
-          await fetch('/api/cloudinary/folder', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ category: name, subcategory: sub.name })
+          await fetch("/api/cloudinary/folder", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ category: name, subcategory: sub.name }),
           });
         }
       }
     } catch (folderError) {
-      console.error('Error creating Cloudinary folders:', folderError);
+      console.error("Error creating Cloudinary folders:", folderError);
       // Continue even if folder creation fails
     }
-    
+
     return categoryId;
   } catch (error) {
     console.error("Error creating category:", error);
@@ -517,49 +520,53 @@ export const createCategory = async (categoryData) => {
 export const updateCategory = async (categoryId, updateData) => {
   try {
     const categoryRef = doc(db, COLLECTIONS.CATEGORIES, categoryId);
-    
+
     // Get current category data to check for new subcategories
     const categorySnap = await getDoc(categoryRef);
     const currentData = categorySnap.data();
-    
+
     // Ensure subcategories have IDs
     const processedData = { ...updateData };
     if (processedData.subcategories) {
-      processedData.subcategories = processedData.subcategories.map(sub => ({
+      processedData.subcategories = processedData.subcategories.map((sub) => ({
         id: sub.id || sanitizeCategoryId(sub.name), // Use existing ID or generate new one
         name: sub.name.trim(),
-        description: sub.description || ''
+        description: sub.description || "",
       }));
     }
-    
+
     await updateDoc(categoryRef, {
       ...processedData,
       updatedAt: serverTimestamp(),
     });
-    
+
     // Create folders for any new subcategories
     if (processedData.subcategories && currentData) {
-      const currentSubNames = (currentData.subcategories || []).map(s => s.name);
-      const newSubs = processedData.subcategories.filter(s => !currentSubNames.includes(s.name));
-      
+      const currentSubNames = (currentData.subcategories || []).map(
+        (s) => s.name,
+      );
+      const newSubs = processedData.subcategories.filter(
+        (s) => !currentSubNames.includes(s.name),
+      );
+
       for (const sub of newSubs) {
         if (sub.name.trim()) {
           try {
-            await fetch('/api/cloudinary/folder', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                category: processedData.name || currentData.name, 
-                subcategory: sub.name 
-              })
+            await fetch("/api/cloudinary/folder", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                category: processedData.name || currentData.name,
+                subcategory: sub.name,
+              }),
             });
           } catch (e) {
-            console.error('Error creating subcategory folder:', e);
+            console.error("Error creating subcategory folder:", e);
           }
         }
       }
     }
-    
+
     return true;
   } catch (error) {
     console.error("Error updating category:", error);
@@ -577,24 +584,24 @@ export const deleteCategory = async (categoryId) => {
     // Get category data to know the name for folder deletion
     const categoryRef = doc(db, COLLECTIONS.CATEGORIES, categoryId);
     const categorySnap = await getDoc(categoryRef);
-    
+
     let categoryName = categoryId; // Fallback to ID if name not found
     if (categorySnap.exists()) {
       categoryName = categorySnap.data().name || categoryId;
     }
-    
+
     // Delete Cloudinary folder (including all subfolders)
     try {
-      await fetch('/api/cloudinary/folder', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: categoryName })
+      await fetch("/api/cloudinary/folder", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: categoryName }),
       });
     } catch (folderError) {
-      console.error('Error deleting Cloudinary folder:', folderError);
+      console.error("Error deleting Cloudinary folder:", folderError);
       // Continue with Firestore deletion even if folder deletion fails
     }
-    
+
     // Delete from Firestore
     await deleteDoc(categoryRef);
     return true;
@@ -614,43 +621,50 @@ export const addSubcategory = async (categoryId, subcategory) => {
   try {
     const categoryRef = doc(db, COLLECTIONS.CATEGORIES, categoryId);
     const categorySnap = await getDoc(categoryRef);
-    
+
     if (!categorySnap.exists()) {
-      throw new Error('Category not found');
+      throw new Error("Category not found");
     }
-    
+
     const categoryData = categorySnap.data();
     const currentSubs = categoryData.subcategories || [];
-    
+
     // Check if subcategory already exists
-    if (currentSubs.some(s => s.name.toLowerCase() === subcategory.name.toLowerCase())) {
-      throw new Error('Subcategory already exists');
+    if (
+      currentSubs.some(
+        (s) => s.name.toLowerCase() === subcategory.name.toLowerCase(),
+      )
+    ) {
+      throw new Error("Subcategory already exists");
     }
-    
+
     // Add new subcategory with generated ID
     await updateDoc(categoryRef, {
-      subcategories: [...currentSubs, {
-        id: sanitizeCategoryId(subcategory.name), // Generate ID from name
-        name: subcategory.name.trim(),
-        description: subcategory.description || ''
-      }],
+      subcategories: [
+        ...currentSubs,
+        {
+          id: sanitizeCategoryId(subcategory.name), // Generate ID from name
+          name: subcategory.name.trim(),
+          description: subcategory.description || "",
+        },
+      ],
       updatedAt: serverTimestamp(),
     });
-    
+
     // Create Cloudinary folder
     try {
-      await fetch('/api/cloudinary/folder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          category: categoryData.name, 
-          subcategory: subcategory.name 
-        })
+      await fetch("/api/cloudinary/folder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: categoryData.name,
+          subcategory: subcategory.name,
+        }),
       });
     } catch (folderError) {
-      console.error('Error creating subcategory folder:', folderError);
+      console.error("Error creating subcategory folder:", folderError);
     }
-    
+
     return true;
   } catch (error) {
     console.error("Error adding subcategory:", error);
@@ -668,20 +682,21 @@ export const removeSubcategory = async (categoryId, subcategoryName) => {
   try {
     const categoryRef = doc(db, COLLECTIONS.CATEGORIES, categoryId);
     const categorySnap = await getDoc(categoryRef);
-    
+
     if (!categorySnap.exists()) {
-      throw new Error('Category not found');
+      throw new Error("Category not found");
     }
-    
+
     const categoryData = categorySnap.data();
-    const updatedSubs = (categoryData.subcategories || [])
-      .filter(s => s.name.toLowerCase() !== subcategoryName.toLowerCase());
-    
+    const updatedSubs = (categoryData.subcategories || []).filter(
+      (s) => s.name.toLowerCase() !== subcategoryName.toLowerCase(),
+    );
+
     await updateDoc(categoryRef, {
       subcategories: updatedSubs,
       updatedAt: serverTimestamp(),
     });
-    
+
     return true;
   } catch (error) {
     console.error("Error removing subcategory:", error);

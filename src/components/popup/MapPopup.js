@@ -140,9 +140,9 @@ const MapPopup = ({ marker, category }) => {
                 {marker?.metadata?.authorName || marker?.author}
               </p>
             )}
-            <p className="flex items-center gap-1 text-xs lg:text-sm">
+            {/* <p className="flex items-center gap-1 text-xs lg:text-sm">
               <FaCameraRetro className="text-lg" /> Apple iPhone 14
-            </p>
+            </p> */}
           </div>
         </div>
 
