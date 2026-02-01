@@ -157,10 +157,15 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
       }
 
       // Upload image to Cloudinary if file selected
-      let imageUrl = "/images/marker-popup-default.png";
-      let thumbnailUrl = "/images/marker-popup-default.png";
-      let markerUrl = "/images/marker-popup-default.png";
-      let mediaType = "image";
+      let imageUrl = marker?._original?.imageUrl || "/images/marker-popup-default.png";
+      let thumbnailUrl = marker?._original?.thumbnailUrl || "/images/marker-popup-default.png";
+      let markerUrl = marker?._original?.markerUrl || "/images/marker-popup-default.png";
+      let mediaType = marker?._original?.mediaType || "image";
+
+      // Handle multiple images (imageUrls array)
+      let imageUrls = marker?._original?.imageUrls || null;
+      let thumbnailUrls = marker?._original?.thumbnailUrls || null;
+      let markerUrls = marker?._original?.markerUrls || null;
 
       if (formData.imageFiles && formData.imageFiles.length > 0) {
         try {
@@ -188,26 +193,43 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
       }
 
       // Create the image submission data
+      const lat = parseFloat(formData.lat);
+      const lng = parseFloat(formData.lng);
+      
+      // Validate lat/lng are valid numbers
+      if (isNaN(lat) || isNaN(lng)) {
+        setError("Invalid coordinates. Please check latitude and longitude.");
+        setLoading(false);
+        return;
+      }
+
       const imageData = {
         title: formData.title,
         description: formData.description || "",
-        lat: parseFloat(formData.lat),
-        lng: parseFloat(formData.lng),
+        lat,
+        lng,
         categoryId: formData.categoryId,
         subcategoryId: formData.subcategoryId || null,
-        artistId: userId,
+        artistId: marker?._original?.artistId || userId,
         metadata: {
           locationName: formData.location || "",
           authorName:
             `${formData.author.firstName} ${formData.author.lastName}`.trim(),
         },
-        ...(role.toLowerCase() === "admin" && {
-          status: formData.status,
-        }),
+        // Always use lowercase status for Firestore queries
+        status: role.toLowerCase() === "admin" 
+          ? formData.status.toLowerCase() 
+          : (marker?._original?.status || marker?.status?.toLowerCase() || "pending"),
         imageUrl,
         thumbnailUrl,
         markerUrl,
         mediaType,
+        // Preserve multiple images if they exist
+        ...(imageUrls && { imageUrls }),
+        ...(thumbnailUrls && { thumbnailUrls }),
+        ...(markerUrls && { markerUrls }),
+        // Preserve createdAt timestamp
+        ...(marker?._original?.createdAt && { createdAt: marker._original.createdAt }),
       };
 
       if (marker) {
