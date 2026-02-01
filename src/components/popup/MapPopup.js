@@ -85,7 +85,7 @@ const MapPopup = ({ marker, category }) => {
                 title="Get directions"
               >
                 <IoLocationSharp className="text-lg text-black" />{" "}
-                {marker.lat.toFixed(4)}, {marker.lng.toFixed(4)}
+                {marker?.metadata?.locationName || `${marker.lat.toFixed(4)}, ${marker.lng.toFixed(4)}`}
                 <MdDirections className="text-sm text-blue-500" />
               </button>
               
