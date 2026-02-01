@@ -28,6 +28,9 @@ export default function Map() {
   const [markers, setMarkers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
+  const [activeSubcategory, setActiveSubcategory] = useState(null);
+  const [hoveredCategory, setHoveredCategory] = useState(null);
+  const [hoveredSubcategory, setHoveredSubcategory] = useState(null);
 
   const mapContainer = useRef(null);
   const map = useRef(null);
@@ -97,11 +100,19 @@ export default function Map() {
     };
   }, [isClient]);
 
-  // Filter markers by category
+  // Filter markers by category and subcategory
   const filteredMarkers = useMemo(() => {
     if (!activeCategory) return markers;
-    return markers.filter((m) => m.categoryId === activeCategory);
-  }, [markers, activeCategory]);
+    
+    let filtered = markers.filter((m) => m.categoryId === activeCategory);
+    
+    // Further filter by subcategory if selected
+    if (activeSubcategory) {
+      filtered = filtered.filter((m) => m.subcategoryId === activeSubcategory);
+    }
+    
+    return filtered;
+  }, [markers, activeCategory, activeSubcategory]);
 
   // Add markers once the map is ready and data is loaded
   useEffect(() => {
@@ -117,6 +128,11 @@ export default function Map() {
     const entries = filteredMarkers.map((data) => {
       const cat = categories.find((c) => c.id === data.categoryId);
 
+      // Check if this marker should be highlighted (hovered)
+      const isHovered = 
+        (hoveredCategory && data.categoryId === hoveredCategory && !hoveredSubcategory) ||
+        (hoveredSubcategory && data.subcategoryId === hoveredSubcategory);
+
       // custom marker element
       const el = document.createElement("div");
 
@@ -124,16 +140,23 @@ export default function Map() {
       img.src = markerMode === "icon" ? cat.iconUrl : data.imageUrl;
       img.alt = data.title || "Marker";
 
-      el.style.width = "32px";
-      el.style.height = "32px";
+      // Base size, larger if hovered
+      const size = isHovered ? "44px" : "32px";
+      el.style.width = size;
+      el.style.height = size;
       el.style.cursor = "pointer";
+      el.style.transition = "all 0.2s ease";
+      el.style.zIndex = isHovered ? "100" : "1";
 
       img.style.width = "100%";
       img.style.height = "100%";
       img.style.display = "block";
       img.style.borderRadius = "50%";
       img.style.objectFit = "cover";
-      img.style.border = `2px solid ${markerMode === "icon" ? "white" : cat?.color}`;
+      img.style.border = isHovered 
+        ? `3px solid ${cat?.color || "#6BEE32"}` 
+        : `2px solid ${markerMode === "icon" ? "white" : cat?.color}`;
+      img.style.boxShadow = isHovered ? "0 4px 12px rgba(0,0,0,0.4)" : "none";
 
       el.appendChild(img);
 
@@ -148,7 +171,7 @@ export default function Map() {
 
       el.addEventListener("click", onClick);
 
-      return { marker, el, onClick };
+      return { marker, el, onClick, data };
     });
 
     markersRef.current = entries;
@@ -159,10 +182,28 @@ export default function Map() {
         marker.remove();
       });
     };
-  }, [mapReady, markerMode, filteredMarkers, categories, isLoading]);
+  }, [mapReady, markerMode, filteredMarkers, categories, isLoading, hoveredCategory, hoveredSubcategory]);
 
   const handleCategoryFilter = useCallback((categoryId) => {
-    setActiveCategory((prev) => (prev === categoryId ? null : categoryId));
+    setActiveCategory(categoryId);
+    // Clear subcategory when category changes
+    if (categoryId !== activeCategory) {
+      setActiveSubcategory(null);
+    }
+  }, [activeCategory]);
+
+  const handleSubcategoryFilter = useCallback((subcategoryId) => {
+    setActiveSubcategory(subcategoryId);
+  }, []);
+
+  const handleCategoryHover = useCallback((categoryId) => {
+    setHoveredCategory(categoryId);
+    setHoveredSubcategory(null);
+  }, []);
+
+  const handleSubcategoryHover = useCallback((categoryId, subcategoryId) => {
+    setHoveredCategory(categoryId);
+    setHoveredSubcategory(subcategoryId);
   }, []);
 
   if (!isClient) return null;
@@ -173,6 +214,10 @@ export default function Map() {
         categories={categories}
         activeCategory={activeCategory}
         onCategorySelect={handleCategoryFilter}
+        activeSubcategory={activeSubcategory}
+        onSubcategorySelect={handleSubcategoryFilter}
+        onCategoryHover={handleCategoryHover}
+        onSubcategoryHover={handleSubcategoryHover}
       />
 
       <div ref={mapContainer} className="absolute w-full h-full" />
