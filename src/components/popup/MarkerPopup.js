@@ -372,8 +372,8 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
                   className="w-full border px-3 py-2 rounded text-sm"
                 >
                   <option value="">Select Subcategory (optional)</option>
-                  {availableSubcategories.map((sub) => (
-                    <option key={sub.id} value={sub.id}>
+                  {availableSubcategories.map((sub, index) => (
+                    <option key={sub.id || sub.name || index} value={sub.id || sub.name}>
                       {sub.name}
                     </option>
                   ))}
@@ -427,14 +427,14 @@ export default function MarkerPopup({ show, onClose, marker, onRefresh }) {
 
             {/* Description */}
             <div>
-              <label className="block font-medium text-sm">Description *</label>
+              <label className="block font-medium text-sm">Description</label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 className="w-full border px-3 py-2 rounded text-sm"
                 rows={4}
-                required
+                placeholder="Optional description..."
               />
             </div>
 

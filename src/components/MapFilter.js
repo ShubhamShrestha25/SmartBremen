@@ -92,24 +92,34 @@ const MapFilter = ({
                   )}
                 </span>
 
-                <Image
-                  src={cat.iconUrl}
-                  alt=""
-                  width={28}
-                  height={28}
-                  className="w-8 h-8 rounded-full"
-                />
+                {cat.iconUrl ? (
+                  <Image
+                    src={cat.iconUrl}
+                    alt=""
+                    width={28}
+                    height={28}
+                    className="w-8 h-8 rounded-full"
+                  />
+                ) : (
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                    style={{ backgroundColor: cat.color || "#6BEE32" }}
+                  >
+                    {(cat.name || cat.title || "?").charAt(0).toUpperCase()}
+                  </div>
+                )}
               </button>
 
               {/* Subcategories (shown when expanded) */}
               {hasSubcategories && isExpanded && (
                 <div className="flex flex-col gap-0.5 items-end mr-2.5 animate-fadeIn">
-                  {cat.subcategories.map((sub) => {
-                    const isSubActive = activeSubcategory === sub.id;
+                  {cat.subcategories.map((sub, index) => {
+                    const subId = sub.id || sub.name || `sub-${index}`;
+                    const isSubActive = activeSubcategory === subId;
                     
                     return (
                       <button
-                        key={sub.id}
+                        key={subId}
                         type="button"
                         className={`group flex items-center h-6 rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 text-white text-[11px] px-2.5 hover:scale-105 ${
                           isSubActive ? "opacity-100 font-semibold shadow-md" : "opacity-80 hover:opacity-100"
@@ -118,9 +128,9 @@ const MapFilter = ({
                           backgroundColor: cat.color || "#6BEE32",
                           filter: isSubActive ? "brightness(0.85) contrast(1.1)" : "brightness(1.15)"
                         }}
-                        onClick={(e) => handleSubcategoryClick(e, cat.id, sub.id)}
+                        onClick={(e) => handleSubcategoryClick(e, cat.id, subId)}
                         onMouseEnter={() => {
-                          if (onSubcategoryHover) onSubcategoryHover(cat.id, sub.id);
+                          if (onSubcategoryHover) onSubcategoryHover(cat.id, subId);
                         }}
                         onMouseLeave={() => {
                           if (onSubcategoryHover) onSubcategoryHover(null, null);
