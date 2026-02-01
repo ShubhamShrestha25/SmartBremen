@@ -103,14 +103,14 @@ export default function Map() {
   // Filter markers by category and subcategory
   const filteredMarkers = useMemo(() => {
     if (!activeCategory) return markers;
-    
+
     let filtered = markers.filter((m) => m.categoryId === activeCategory);
-    
+
     // Further filter by subcategory if selected
     if (activeSubcategory) {
       filtered = filtered.filter((m) => m.subcategoryId === activeSubcategory);
     }
-    
+
     return filtered;
   }, [markers, activeCategory, activeSubcategory]);
 
@@ -129,8 +129,10 @@ export default function Map() {
       const cat = categories.find((c) => c.id === data.categoryId);
 
       // Check if this marker should be highlighted (hovered)
-      const isHovered = 
-        (hoveredCategory && data.categoryId === hoveredCategory && !hoveredSubcategory) ||
+      const isHovered =
+        (hoveredCategory &&
+          data.categoryId === hoveredCategory &&
+          !hoveredSubcategory) ||
         (hoveredSubcategory && data.subcategoryId === hoveredSubcategory);
 
       // custom marker element
@@ -153,8 +155,8 @@ export default function Map() {
       img.style.display = "block";
       img.style.borderRadius = "50%";
       img.style.objectFit = "cover";
-      img.style.border = isHovered 
-        ? `3px solid ${cat?.color || "#6BEE32"}` 
+      img.style.border = isHovered
+        ? `3px solid ${cat?.color || "#6BEE32"}`
         : `2px solid ${markerMode === "icon" ? "white" : cat?.color}`;
       img.style.boxShadow = isHovered ? "0 4px 12px rgba(0,0,0,0.4)" : "none";
 
@@ -182,15 +184,26 @@ export default function Map() {
         marker.remove();
       });
     };
-  }, [mapReady, markerMode, filteredMarkers, categories, isLoading, hoveredCategory, hoveredSubcategory]);
+  }, [
+    mapReady,
+    markerMode,
+    filteredMarkers,
+    categories,
+    isLoading,
+    hoveredCategory,
+    hoveredSubcategory,
+  ]);
 
-  const handleCategoryFilter = useCallback((categoryId) => {
-    setActiveCategory(categoryId);
-    // Clear subcategory when category changes
-    if (categoryId !== activeCategory) {
-      setActiveSubcategory(null);
-    }
-  }, [activeCategory]);
+  const handleCategoryFilter = useCallback(
+    (categoryId) => {
+      setActiveCategory(categoryId);
+      // Clear subcategory when category changes
+      if (categoryId !== activeCategory) {
+        setActiveSubcategory(null);
+      }
+    },
+    [activeCategory],
+  );
 
   const handleSubcategoryFilter = useCallback((subcategoryId) => {
     setActiveSubcategory(subcategoryId);
