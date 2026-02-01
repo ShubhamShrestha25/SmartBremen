@@ -63,108 +63,117 @@ const Users = ({ usersData = [], onRefresh }) => {
         Users
       </h1>
 
-      <div className="overflow-x-auto custom-scrollbar">
-        <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
-                Name
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
-                Email
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600  md:text-sm">
-                Role
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600  md:text-sm">
-                Joined
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-600  md:text-sm">
-                Upload Enabled
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-600  md:text-sm">
-                Actions
-              </th>
-            </tr>
-          </thead>
-
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {usersData.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
-                  No users found
-                </td>
-              </tr>
-            ) : (
-              paginatedUsers.map((user) => (
-                <tr key={user.uid} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-xs font-medium text-gray-800 whitespace-nowrap md:text-sm">
-                    {user.name || "Unnamed"}
-                  </td>
-
-                  <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
-                    {user.email}
-                  </td>
-
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <span
-                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        user.role === "admin"
-                          ? "bg-purple-100 text-purple-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {user.role || "artist"}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
-                    {formatDate(user.createdAt)}
-                  </td>
-
-                  <td className="px-4 py-3 text-center">
-                    {actionLoading === user.uid ? (
-                      <div className="flex justify-center">
-                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-900"></div>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => handleToggleUpload(user)}
-                        className="text-2xl"
-                        title={
-                          user.uploadEnabled
-                            ? "Disable uploads"
-                            : "Enable uploads"
-                        }
-                      >
-                        {user.uploadEnabled ? (
-                          <IoToggle className="text-green-500" />
-                        ) : (
-                          <IoToggleOutline className="text-gray-400" />
-                        )}
-                      </button>
-                    )}
-                  </td>
-
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
-                        title="Delete user"
-                      >
-                        <FaRegTrashAlt />
-                      </button>
-                    </div>
-                  </td>
+      {usersData?.length > 0 ? (
+        <>
+          <div className="overflow-x-auto custom-scrollbar">
+            <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                    Name
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                    Email
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600  md:text-sm">
+                    Role
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600  md:text-sm">
+                    Joined
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-600  md:text-sm">
+                    Upload Enabled
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-600  md:text-sm">
+                    Actions
+                  </th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-      <p className="mt-3 text-center text-sm sm:hidden">
-        Swipe left or right to view the table 👉📱
-      </p>
+              </thead>
+
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {usersData.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="6"
+                      className="px-4 py-8 text-center text-gray-500"
+                    >
+                      No users found
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedUsers.map((user) => (
+                    <tr key={user.uid} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-xs font-medium text-gray-800 whitespace-nowrap md:text-sm">
+                        {user.name || "Unnamed"}
+                      </td>
+
+                      <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
+                        {user.email}
+                      </td>
+
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span
+                          className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                            user.role === "admin"
+                              ? "bg-purple-100 text-purple-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
+                        >
+                          {user.role || "artist"}
+                        </span>
+                      </td>
+
+                      <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
+                        {formatDate(user.createdAt)}
+                      </td>
+
+                      <td className="px-4 py-3 text-center">
+                        {actionLoading === user.uid ? (
+                          <div className="flex justify-center">
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-900"></div>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleToggleUpload(user)}
+                            className="text-2xl"
+                            title={
+                              user.uploadEnabled
+                                ? "Disable uploads"
+                                : "Enable uploads"
+                            }
+                          >
+                            {user.uploadEnabled ? (
+                              <IoToggle className="text-green-500" />
+                            ) : (
+                              <IoToggleOutline className="text-gray-400" />
+                            )}
+                          </button>
+                        )}
+                      </td>
+
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
+                            title="Delete user"
+                          >
+                            <FaRegTrashAlt />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-center text-sm sm:hidden">
+            Swipe left or right to view the table 👉📱
+          </p>
+        </>
+      ) : (
+        <p className="mt-10 text-center">No records available</p>
+      )}
 
       <Pagination
         currentPage={currentPage}

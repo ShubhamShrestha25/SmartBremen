@@ -3,14 +3,14 @@ import { useMemo, useState } from "react";
 import { IoCheckmarkDone } from "react-icons/io5";
 import { MdSubdirectoryArrowRight } from "react-icons/md";
 
-const MapFilter = ({ 
-  categories, 
-  activeCategory, 
+const MapFilter = ({
+  categories,
+  activeCategory,
   onCategorySelect,
   activeSubcategory,
   onSubcategorySelect,
   onCategoryHover,
-  onSubcategoryHover
+  onSubcategoryHover,
 }) => {
   const [hoverColor, setHoverColor] = useState(null);
   const [expandedCategory, setExpandedCategory] = useState(null);
@@ -30,7 +30,7 @@ const MapFilter = ({
     } else {
       setExpandedCategory(catId);
     }
-    
+
     // If clicking the same category that's active, deselect it
     if (activeCategory === catId && !activeSubcategory) {
       onCategorySelect(null);
@@ -45,7 +45,7 @@ const MapFilter = ({
 
   const handleSubcategoryClick = (e, catId, subId) => {
     e.stopPropagation();
-    
+
     // If clicking the same subcategory, deselect it
     if (activeSubcategory === subId) {
       if (onSubcategorySelect) onSubcategorySelect(null);
@@ -57,11 +57,12 @@ const MapFilter = ({
 
   return (
     <div className="flex items-center gap-2.5 absolute z-30 right-0 top-1/2 -translate-y-1/2">
-      <div className="flex flex-col gap-1 items-end max-h-[70vh] overflow-y-auto pr-1">
+      <div className="flex flex-col gap-1 items-end max-h-[70vh] pr-1">
         {categories.map((cat) => {
           const isActive = activeCategory === cat.id;
           const isExpanded = expandedCategory === cat.id;
-          const hasSubcategories = cat.subcategories && cat.subcategories.length > 0;
+          const hasSubcategories =
+            cat.subcategories && cat.subcategories.length > 0;
 
           return (
             <div key={cat.id} className="flex flex-col items-end gap-0.5">
@@ -69,7 +70,9 @@ const MapFilter = ({
               <button
                 type="button"
                 className={`group flex items-center justify-end h-8 rounded-3xl overflow-hidden cursor-pointer transition-all duration-200 w-8 text-white hover:h-9 hover:pl-2.5 hover:w-fit hover:scale-105 ${
-                  isActive && !activeSubcategory ? "isOpen h-9 pl-2.5 w-fit" : ""
+                  isActive && !activeSubcategory
+                    ? "isOpen h-9 pl-2.5 w-fit"
+                    : ""
                 }`}
                 style={{ backgroundColor: cat.color || "#6BEE32" }}
                 onClick={() => handleCategoryClick(cat.id)}
@@ -101,7 +104,7 @@ const MapFilter = ({
                     className="w-8 h-8 rounded-full"
                   />
                 ) : (
-                  <div 
+                  <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
                     style={{ backgroundColor: cat.color || "#6BEE32" }}
                   >
@@ -116,32 +119,40 @@ const MapFilter = ({
                   {cat.subcategories.map((sub, index) => {
                     const subId = sub.id || sub.name || `sub-${index}`;
                     const isSubActive = activeSubcategory === subId;
-                    
+
                     return (
                       <button
                         key={subId}
                         type="button"
                         className={`group flex items-center h-6 rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 text-white text-[11px] px-2.5 hover:scale-105 ${
-                          isSubActive ? "opacity-100 font-semibold shadow-md" : "opacity-80 hover:opacity-100"
+                          isSubActive
+                            ? "opacity-100 font-semibold shadow-md"
+                            : "opacity-80 hover:opacity-100"
                         }`}
-                        style={{ 
+                        style={{
                           backgroundColor: cat.color || "#6BEE32",
-                          filter: isSubActive ? "brightness(0.85) contrast(1.1)" : "brightness(1.15)"
+                          filter: isSubActive
+                            ? "brightness(0.85) contrast(1.1)"
+                            : "brightness(1.15)",
                         }}
-                        onClick={(e) => handleSubcategoryClick(e, cat.id, subId)}
+                        onClick={(e) =>
+                          handleSubcategoryClick(e, cat.id, subId)
+                        }
                         onMouseEnter={() => {
-                          if (onSubcategoryHover) onSubcategoryHover(cat.id, subId);
+                          if (onSubcategoryHover)
+                            onSubcategoryHover(cat.id, subId);
                         }}
                         onMouseLeave={() => {
-                          if (onSubcategoryHover) onSubcategoryHover(null, null);
+                          if (onSubcategoryHover)
+                            onSubcategoryHover(null, null);
                         }}
                         aria-pressed={isSubActive}
                         aria-label={sub.name}
                       >
-                        <MdSubdirectoryArrowRight className={`mr-1 text-xs ${isSubActive ? "text-white" : ""}`} />
-                        <span className="whitespace-nowrap">
-                          {sub.name}
-                        </span>
+                        <MdSubdirectoryArrowRight
+                          className={`mr-1 text-xs ${isSubActive ? "text-white" : ""}`}
+                        />
+                        <span className="whitespace-nowrap">{sub.name}</span>
                         {isSubActive && (
                           <IoCheckmarkDone className="text-sm ml-1.5" />
                         )}

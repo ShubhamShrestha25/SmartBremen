@@ -130,106 +130,108 @@ const Markers = ({ markersData, categories, onRefresh, userProfile }) => {
         )}
       </div>
 
-      <div className="overflow-x-auto custom-scrollbar">
-        <table className="min-w-full border border-gray-200 rounded-lg">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
-                Image
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
-                Title
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
-                Author
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
-                Location
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
-                Category
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
-                Description
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
-                Status
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 md:text-sm">
-                Actions
-              </th>
-            </tr>
-          </thead>
+      {markersData?.length > 0 ? (
+        <>
+          <div className="overflow-x-auto custom-scrollbar">
+            <table className="min-w-full border border-gray-200 rounded-lg">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                    Image
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                    Title
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                    Author
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                    Location
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                    Category
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                    Description
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 md:text-sm">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 md:text-sm">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
 
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {paginatedMarkers?.map((marker) => (
-              <tr key={marker.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <div
-                    onClick={() => {
-                      setIsOpen(true);
-                      setSelectedMarker(marker);
-                    }}
-                    className="relative w-18 h-14 border border-[#6BEE32] rounded-xl flex justify-center items-center cursor-pointer md:w-20 md:h-15"
-                  >
-                    <Image
-                      src={
-                        marker?.images?.[0]?.markerUrl ||
-                        marker?.thumbnailUrl ||
-                        "/images/marker-popup-default.png"
-                      }
-                      alt={marker?.title || "Marker"}
-                      width={80}
-                      height={60}
-                      className="w-full h-full rounded-xl object-cover"
-                    />
-                    {marker?.images?.length > 1 && (
-                      <div className="absolute -top-2.5 -right-2.5 flex justify-center items-center w-6 h-6 bg-black text-white rounded-full text-sm">
-                        +{marker?.images?.length - 1}
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {paginatedMarkers?.map((marker) => (
+                  <tr key={marker.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <div
+                        onClick={() => {
+                          setIsOpen(true);
+                          setSelectedMarker(marker);
+                        }}
+                        className="relative w-18 h-14 border border-[#6BEE32] rounded-xl flex justify-center items-center cursor-pointer md:w-20 md:h-15"
+                      >
+                        <Image
+                          src={
+                            marker?.images?.[0]?.markerUrl ||
+                            marker?.thumbnailUrl ||
+                            "/images/marker-popup-default.png"
+                          }
+                          alt={marker?.title || "Marker"}
+                          width={80}
+                          height={60}
+                          className="w-full h-full rounded-xl object-cover"
+                        />
+                        {marker?.images?.length > 1 && (
+                          <div className="absolute -top-2.5 -right-2.5 flex justify-center items-center w-6 h-6 bg-black text-white rounded-full text-sm">
+                            +{marker?.images?.length - 1}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </td>
+                    </td>
 
-                <td className="px-4 py-3 text-xs font-medium text-gray-800 whitespace-nowrap md:text-sm">
-                  {marker?.title || "Untitled"}
-                </td>
+                    <td className="px-4 py-3 text-xs font-medium text-gray-800 whitespace-nowrap md:text-sm">
+                      {marker?.title || "Untitled"}
+                    </td>
 
-                <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
-                  {(marker?.author?.firstName || "") +
-                    " " +
-                    (marker?.author?.lastName || "")}
-                </td>
+                    <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
+                      {(marker?.author?.firstName || "") +
+                        " " +
+                        (marker?.author?.lastName || "")}
+                    </td>
 
-                <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
-                  {marker?.location?.name ||
-                    `${marker?.location?.lat?.toFixed(4) || "?"}, ${marker?.location?.lng?.toFixed(4) || "?"}`}
-                </td>
-                <td className="px-4 py-3  text-gray-600 whitespace-nowrap">
-                  <div className="flex flex-col gap-1">
-                    <span
-                      className="px-2 py-1 rounded text-xs "
-                      style={{
-                        backgroundColor: marker?.category?.color + "20",
-                        color: marker?.category?.color,
-                      }}
-                    >
-                      {marker?.category?.name || "Uncategorized"}
-                    </span>
-                    {getSubcategoryName(marker) && (
-                      <span className="text-xs text-gray-500 pl-1">
-                        ↳ {getSubcategoryName(marker)}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-xs text-gray-600 max-w-xs truncate md:text-sm">
-                  {marker?.description || "No description"}
-                </td>
+                    <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap md:text-sm">
+                      {marker?.location?.name ||
+                        `${marker?.location?.lat?.toFixed(4) || "?"}, ${marker?.location?.lng?.toFixed(4) || "?"}`}
+                    </td>
+                    <td className="px-4 py-3  text-gray-600 whitespace-nowrap">
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className="px-2 py-1 rounded text-xs "
+                          style={{
+                            backgroundColor: marker?.category?.color + "20",
+                            color: marker?.category?.color,
+                          }}
+                        >
+                          {marker?.category?.name || "Uncategorized"}
+                        </span>
+                        {getSubcategoryName(marker) && (
+                          <span className="text-xs text-gray-500 pl-1">
+                            ↳ {getSubcategoryName(marker)}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-gray-600 max-w-xs truncate md:text-sm">
+                      {marker?.description || "No description"}
+                    </td>
 
-                <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold 
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold 
                          ${
                            marker.status?.toLowerCase() === "pending"
                              ? "bg-yellow-100 text-yellow-800"
@@ -237,64 +239,68 @@ const Markers = ({ markersData, categories, onRefresh, userProfile }) => {
                                ? "bg-red-100 text-red-800"
                                : "bg-green-100 text-green-800"
                          }`}
-                  >
-                    {marker.status}
-                  </span>
-                </td>
+                      >
+                        {marker.status}
+                      </span>
+                    </td>
 
-                <td className="px-4 py-3 text-center">
-                  {actionLoading === marker.id ? (
-                    <div className="flex justify-end">
-                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
-                    </div>
-                  ) : role === "ADMIN" &&
-                    marker.status?.toLowerCase() === "pending" ? (
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => handleMarkerApprove(marker.id)}
-                        className="rounded-md bg-[#6BEE32] p-2.5 text-white hover:bg-green-600 transition-colors"
-                        title="Approve"
-                      >
-                        <FaCheck />
-                      </button>
-                      <button
-                        onClick={() => handleMarkerDecline(marker.id)}
-                        className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
-                        title="Reject"
-                      >
-                        <RxCross1 />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex justify-center gap-2">
-                      <button
-                        onClick={() => {
-                          setShowModal(true);
-                          setSelectedMarker(marker);
-                        }}
-                        className="rounded-md bg-black p-2.5 text-white hover:bg-gray-800 transition-colors"
-                        title="Edit"
-                      >
-                        <MdEdit />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteMarker(marker.id)}
-                        className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
-                        title="Delete"
-                      >
-                        <FaRegTrashAlt />
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p className="mt-3 text-center text-sm 2xl:hidden">
-        Swipe left or right to view the table 👉📱
-      </p>
+                    <td className="px-4 py-3 text-center">
+                      {actionLoading === marker.id ? (
+                        <div className="flex justify-end">
+                          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
+                        </div>
+                      ) : role === "ADMIN" &&
+                        marker.status?.toLowerCase() === "pending" ? (
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => handleMarkerApprove(marker.id)}
+                            className="rounded-md bg-[#6BEE32] p-2.5 text-white hover:bg-green-600 transition-colors"
+                            title="Approve"
+                          >
+                            <FaCheck />
+                          </button>
+                          <button
+                            onClick={() => handleMarkerDecline(marker.id)}
+                            className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
+                            title="Reject"
+                          >
+                            <RxCross1 />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => {
+                              setShowModal(true);
+                              setSelectedMarker(marker);
+                            }}
+                            className="rounded-md bg-black p-2.5 text-white hover:bg-gray-800 transition-colors"
+                            title="Edit"
+                          >
+                            <MdEdit />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteMarker(marker.id)}
+                            className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
+                            title="Delete"
+                          >
+                            <FaRegTrashAlt />
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-center text-sm 2xl:hidden">
+            Swipe left or right to view the table 👉📱
+          </p>
+        </>
+      ) : (
+        <p className="mt-10 text-center">No records available</p>
+      )}
 
       <Pagination
         currentPage={currentPage}

@@ -38,7 +38,7 @@ export default function UserDashboard() {
           title: img.title || "Untitled",
           description: img.description || "",
           status:
-            img.status?.charAt(0).tolowerCase() + img.status?.slice(1) ||
+            img.status?.charAt(0).toLowerCase() + img.status?.slice(1) ||
             "pending",
           category: {
             informalityCategoryId: img.categoryId,
