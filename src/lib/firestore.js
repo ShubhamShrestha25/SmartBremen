@@ -215,10 +215,61 @@ export const updateImageStatus = async (imageId, status, approvedBy = null) => {
 };
 
 /**
- * Delete an image
+ * Delete an image from Firestore and optionally from Cloudinary
+ * @param {string} imageId - The Firestore document ID
+ * @param {boolean} deleteFromCloud - Whether to also delete from Cloudinary (default: true)
  */
-export const deleteImage = async (imageId) => {
+export const deleteImage = async (imageId, deleteFromCloud = true) => {
   try {
+    // Get the image data first to extract Cloudinary URLs
+    if (deleteFromCloud) {
+      const imageDoc = await getDoc(doc(db, COLLECTIONS.IMAGES, imageId));
+      
+      if (imageDoc.exists()) {
+        const imageData = imageDoc.data();
+        const urlsToDelete = [];
+        
+        // Collect all Cloudinary URLs (single or multiple images)
+        if (imageData.imageUrl) {
+          urlsToDelete.push(imageData.imageUrl);
+        }
+        if (imageData.thumbnailUrl) {
+          urlsToDelete.push(imageData.thumbnailUrl);
+        }
+        if (imageData.markerUrl) {
+          urlsToDelete.push(imageData.markerUrl);
+        }
+        
+        // Handle multiple images (imageUrls array)
+        if (Array.isArray(imageData.imageUrls)) {
+          urlsToDelete.push(...imageData.imageUrls);
+        }
+        if (Array.isArray(imageData.thumbnailUrls)) {
+          urlsToDelete.push(...imageData.thumbnailUrls);
+        }
+        if (Array.isArray(imageData.markerUrls)) {
+          urlsToDelete.push(...imageData.markerUrls);
+        }
+        
+        // Filter to only Cloudinary URLs
+        const cloudinaryUrls = urlsToDelete.filter(url => 
+          url && url.includes('cloudinary.com')
+        );
+        
+        if (cloudinaryUrls.length > 0) {
+          try {
+            const { deleteFromCloudinary } = await import('./cloudinary.js');
+            const result = await deleteFromCloudinary(cloudinaryUrls);
+            console.log('Cloudinary deletion result:', result);
+          } catch (cloudError) {
+            console.error('Error deleting from Cloudinary:', cloudError);
+            // Continue with Firestore deletion even if Cloudinary fails
+          }
+        }
+      }
+    }
+    
+    // Delete from Firestore
     await deleteDoc(doc(db, COLLECTIONS.IMAGES, imageId));
     return true;
   } catch (error) {
