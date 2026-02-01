@@ -73,3 +73,39 @@ export async function uploadToCloudinary(file, category = 'general', subcategory
     mediaType: 'image'
   };
 }
+
+/**
+ * Delete image(s) from Cloudinary via API route
+ * @param {string|string[]} imageUrls - Single URL or array of URLs to delete
+ * @returns {Promise<{success: boolean, deleted: Array, errors?: Array}>}
+ */
+export async function deleteFromCloudinary(imageUrls) {
+  const urls = Array.isArray(imageUrls) ? imageUrls : [imageUrls];
+  
+  // Filter out null/undefined URLs
+  const validUrls = urls.filter(url => url && typeof url === 'string');
+  
+  if (validUrls.length === 0) {
+    return { success: true, deleted: [], message: 'No valid URLs to delete' };
+  }
+
+  try {
+    const response = await fetch('/api/cloudinary/delete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ imageUrls: validUrls }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to delete from Cloudinary');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error deleting from Cloudinary:', error);
+    throw error;
+  }
+}
