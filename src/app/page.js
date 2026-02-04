@@ -21,15 +21,15 @@ export default function Home() {
           <main className="mainContainer relative">
             <div className="relative z-20 mt-10 flex flex-col items-center lg:gap-5 xl:mt-14 2xl:mt-20">
               <div className="text-center">
-                <h1 className="mb-1 text-2xl font-medium text-[#FF4B4B] lg:text-3xl xl:text-4xl 2xl:text-[44px]">
+                <h1 className="mb-1 text-2xl font-medium text-[#FF4B4B] animate-fade-up lg:text-3xl xl:text-4xl 2xl:text-[44px]">
                   Discover the Hidden City
                 </h1>
 
-                <p className="text-[#45414F] lg:text-xl xl:text-[22px] 2xl:text-[24px]">
+                <p className="text-[#45414F] animate-fade-up delay-300 lg:text-xl xl:text-[22px] 2xl:text-[24px]">
                   Stories, Spaces, and Informal Life in Bremen
                 </p>
 
-                <p className="mt-8 text-sm text-[#45414F] sm:w-[550px] lg:w-[700px] lg:text-lg xl:w-[828px] 2xl:text-[20px]">
+                <p className="mt-8 text-sm text-[#45414F] animate-fade-up delay-400 sm:w-[550px] lg:w-[700px] lg:text-lg xl:w-[828px] 2xl:text-[20px]">
                   Between official streets and marked paths, there are stories
                   created by people, improvised gardens, secret shortcuts,
                   micro-hangout spots, and traces of everyday creativity. Smart

@@ -53,3 +53,69 @@
   margin-left: 25px;
   margin-right: 25px;
 }
+
+/* animations */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 1s ease-out forwards;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-600 {
+  animation-delay: 0.6s;
+}
+
+.delay-800 {
+  animation-delay: 0.8s;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.stagger-left > div {
+  opacity: 0;
+  animation: slideInLeft 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.stagger-left > div:nth-child(1) {
+  animation-delay: 0.2s;
+}
+.stagger-left > div:nth-child(2) {
+  animation-delay: 0.4s;
+}
+.stagger-left > div:nth-child(3) {
+  animation-delay: 0.6s;
+}
+.stagger-left > div:nth-child(4) {
+  animation-delay: 0.8s;
+}
+.stagger-left > div:nth-child(5) {
+  animation-delay: 1s;
+}
