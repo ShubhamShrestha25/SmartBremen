@@ -92,7 +92,7 @@ export default function Help() {
                   </h1>
                   <button
                     onClick={() => {
-                      window.location.href = "mailto:test123@gmail.com";
+                      window.location.href = "mailto:smartbremen@outlook.com";
                     }}
                     className="w-[125px] h-7 bg-[#6BEE32] rounded-[10px] font-semibold text-xs cursor-pointer lg:w-[152px] lg:h-10 lg:text-base"
                   >
