@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoToggle, IoToggleOutline } from "react-icons/io5";
-import { updateUserProfile } from "@/lib/firestore";
+import { deleteUserProfile, updateUserProfile } from "@/lib/firestore";
 import Pagination from "@/components/Pagination";
 
 const Users = ({ usersData = [], onRefresh }) => {
@@ -55,6 +55,31 @@ const Users = ({ usersData = [], onRefresh }) => {
       month: "short",
       day: "numeric",
     });
+  };
+
+  const handleDeleteUser = async (user) => {
+    const confirmed = window.confirm(
+      `Delete ${user.email}? This will remove their profile permanently.`,
+    );
+
+    if (!confirmed) return;
+
+    setActionLoading(user.uid);
+
+    try {
+      const success = await deleteUserProfile(user.uid);
+
+      if (success) {
+        onRefresh?.();
+      } else {
+        alert("Failed to delete user");
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      alert("Error deleting user");
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   return (
@@ -154,7 +179,9 @@ const Users = ({ usersData = [], onRefresh }) => {
                       <td className="px-4 py-3 text-right">
                         <div className="flex justify-end gap-2">
                           <button
-                            className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors"
+                            onClick={() => handleDeleteUser(user)}
+                            disabled={actionLoading === user.uid}
+                            className="rounded-md bg-[#FF4B4B] p-2.5 text-white hover:bg-red-600 transition-colors disabled:opacity-60"
                             title="Delete user"
                           >
                             <FaRegTrashAlt />

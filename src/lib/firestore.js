@@ -703,3 +703,13 @@ export const removeSubcategory = async (categoryId, subcategoryName) => {
     return false;
   }
 };
+
+export const deleteUserProfile = async (uid) => {
+  try {
+    await deleteDoc(doc(db, COLLECTIONS.USERS, uid));
+    return true;
+  } catch (error) {
+    console.error("Error deleting user profile:", error);
+    return false;
+  }
+};

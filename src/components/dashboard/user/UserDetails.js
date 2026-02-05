@@ -25,7 +25,7 @@ const UserDetails = ({ userProfile }) => {
   };
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-lg border border-gray-200 sm:w-fit">
+    <div className="w-full  bg-white rounded-lg shadow-lg border border-gray-200 sm:w-fit sm:min-w-sm">
       <div className="bg-gray-900 text-white px-4 py-3 rounded-t-lg">
         <h2 className="text-xs font-semibold tracking-wide sm:text-sm">
           User Info

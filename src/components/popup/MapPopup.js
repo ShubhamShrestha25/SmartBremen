@@ -9,11 +9,13 @@ import { useState } from "react";
 
 const MapPopup = ({ marker, category }) => {
   const [showDirections, setShowDirections] = useState(false);
-  
+
   // Build images array from marker data - Slider expects array of URL strings
   const images =
     marker?.images?.length > 0
-           ? marker.images.map((img) => img?.imageUrl || img?.url || img).filter(Boolean)
+      ? marker.images
+          .map((img) => img?.imageUrl || img?.url || img)
+          .filter(Boolean)
       : marker?.imageUrl
         ? [marker.imageUrl]
         : ["/images/marker-popup-default.png"];
@@ -59,7 +61,9 @@ const MapPopup = ({ marker, category }) => {
     <div>
       <div className="relative left-1.5 z-10 bg-white rounded-[18px] p-2 w-[330px] mx-auto  border-2 border-[#6BEE32] sm:mx-0 sm:left-10  lg:w-[350px]">
         <ImageSlider images={images} />
-        <div className="border-b pb-2 my-2 space-y-2">
+        <div
+          className={`my-2 space-y-2 ${marker?.description || (marker?.metadata?.tags?.length > 0 && "border-b pb-2")}`}
+        >
           <div>
             <h1 className="font-medium text-sm lg:text-lg">
               {marker?.title || "Untitled"}
@@ -85,30 +89,33 @@ const MapPopup = ({ marker, category }) => {
                 title="Get directions"
               >
                 <IoLocationSharp className="text-lg text-black" />{" "}
-                {marker?.metadata?.locationName || `${marker.lat.toFixed(4)}, ${marker.lng.toFixed(4)}`}
+                {marker?.metadata?.locationName ||
+                  `${marker.lat.toFixed(4)}, ${marker.lng.toFixed(4)}`}
                 <MdDirections className="text-sm text-blue-500" />
               </button>
-              
+
               {/* Directions dropdown */}
               {showDirections && (
                 <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50 min-w-[160px] py-1">
-                  <p className="px-3 py-1 text-[10px] text-gray-500 font-medium border-b">Get Directions via</p>
+                  <p className="px-3 py-1 text-[10px] text-gray-500 font-medium border-b">
+                    Get Directions via
+                  </p>
                   <button
-                    onClick={() => openDirections('driving')}
+                    onClick={() => openDirections("driving")}
                     className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-gray-100 transition-colors"
                   >
                     <FaCar className="text-gray-600" />
                     <span>By Car</span>
                   </button>
                   <button
-                    onClick={() => openDirections('transit')}
+                    onClick={() => openDirections("transit")}
                     className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-gray-100 transition-colors"
                   >
                     <FaBus className="text-gray-600" />
                     <span>By Public Transit</span>
                   </button>
                   <button
-                    onClick={() => openDirections('walking')}
+                    onClick={() => openDirections("walking")}
                     className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-gray-100 transition-colors"
                   >
                     <FaWalking className="text-gray-600" />
