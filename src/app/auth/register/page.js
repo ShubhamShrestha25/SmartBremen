@@ -38,12 +38,17 @@ export default function RegisterPage() {
 
     try {
       // Create user in Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const user = userCredential.user;
 
       // Create user profile in Firestore
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
+        name,
         email: user.email,
         role: "artist", // Default role for new users
         uploadEnabled: false, // Admin must enable upload access

@@ -38,8 +38,8 @@ export default function Map() {
   // store created markers + handlers so we can cleanly remove them
   const markersRef = useRef([]);
 
-  const bremen = { lng: 8.8017, lat: 53.0793 };
-  const zoom = 14;
+  const bremen = { lat: 53.100315, lng: 8.823935 };
+  const zoom = 13;
 
   maptilersdk.config.apiKey = process.env.NEXT_PUBLIC_MAP_ID || "";
 
@@ -74,7 +74,7 @@ export default function Map() {
 
     const m = new maptilersdk.Map({
       container: mapContainer.current,
-      style: maptilersdk.MapStyle.BASIC,
+      style: maptilersdk.MapStyle.BASIC_V2,
       center: [bremen.lng, bremen.lat],
       zoom,
       navigationControl: false,
@@ -147,7 +147,6 @@ export default function Map() {
       el.style.width = size;
       el.style.height = size;
       el.style.cursor = "pointer";
-      el.style.transition = "all 0.2s ease";
       el.style.zIndex = isHovered ? "100" : "1";
 
       img.style.width = "100%";
