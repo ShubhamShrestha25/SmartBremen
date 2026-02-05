@@ -5,7 +5,7 @@ import { Manrope } from "next/font/google";
 
 export const metadata = {
   title: "Smart Bremen",
-  description: "Test Test Test",
+  description: "Stories, Spaces, and Informal Life in Bremen",
 };
 
 const manrope = Manrope({
