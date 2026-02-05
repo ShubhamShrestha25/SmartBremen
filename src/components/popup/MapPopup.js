@@ -62,7 +62,7 @@ const MapPopup = ({ marker, category }) => {
       <div className="relative left-1.5 z-10 bg-white rounded-[18px] p-2 w-[330px] mx-auto  border-2 border-[#6BEE32] sm:mx-0 sm:left-10  lg:w-[350px]">
         <ImageSlider images={images} />
         <div
-          className={`my-2 space-y-2 ${marker?.description || (marker?.metadata?.tags?.length > 0 && "border-b pb-2")}`}
+          className={`my-2 space-y-2 ${(marker?.description || marker?.metadata?.tags?.length > 0) && "border-b pb-2"}`}
         >
           <div>
             <h1 className="font-medium text-sm lg:text-lg">
